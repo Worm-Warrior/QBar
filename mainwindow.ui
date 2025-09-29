@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+    background-color: #2b2b2b;
+}
+</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="FileBrowserWidget" name="FileBrowser" native="true"/>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="3,1">
+        <item>
+         <widget class="QWidget" name="MainView" native="true"/>
+        </item>
+        <item>
+         <widget class="PlayerControlsWidget" name="PlayerControls" native="true"/>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="chooseRoot"/>
+   </widget>
+   <addaction name="menuHelp"/>
+   <addaction name="menuSettings"/>
+  </widget>
+  <action name="actionaksldjalksdjas">
+   <property name="text">
+    <string>aksldjalksdjas</string>
+   </property>
+  </action>
+  <action name="chooseRoot">
+   <property name="text">
+    <string>Choose Root Directory</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlayerControlsWidget</class>
+   <extends>QWidget</extends>
+   <header>playercontrolswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FileBrowserWidget</class>
+   <extends>QWidget</extends>
+   <header>filebrowserwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

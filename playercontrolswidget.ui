@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PlayerControlsWidget</class>
+ <widget class="QWidget" name="PlayerControlsWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>670</width>
+    <height>111</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_4">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0,0,0,0,0">
+     <item>
+      <widget class="QPushButton" name="prev">
+       <property name="text">
+        <string>Prev</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="PlayPause">
+       <property name="text">
+        <string>Play</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="next">
+       <property name="text">
+        <string>Next</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="spacer">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Policy::Maximum</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="Mute">
+       <property name="text">
+        <string>Mute</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="Volume">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>250</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
