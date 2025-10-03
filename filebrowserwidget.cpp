@@ -18,20 +18,6 @@ FileBrowserWidget::~FileBrowserWidget()
     delete ui;
 }
 
-void FileBrowserWidget::on_chooseRoot_clicked()
-{
-    if (!model) {return;}
-
-    QString dir = QFileDialog::getExistingDirectory(this, "Select Root Directory");
-    if (!dir.isEmpty()) {
-        // setRootPath() both configures the model AND returns a valid QModelIndex
-        QModelIndex rootIndex = model->setRootPath(dir);
-
-        // rootIndex is guaranteed to belong to 'model'
-        ui->treeView->setRootIndex(rootIndex);
-    }
-}
-
 void FileBrowserWidget::changeRoot()
 {
     if (!model) {return;}
@@ -47,3 +33,16 @@ void FileBrowserWidget::changeRoot()
 }
 
 
+void FileBrowserWidget::on_treeView_doubleClicked(const QModelIndex &index)
+{
+    QFileSystemModel *model = qobject_cast<QFileSystemModel*>(ui->treeView->model());
+    if (model)
+    {
+        QString folderPath = model->filePath(index);
+
+        if (QFileInfo(folderPath).isDir())
+        {
+            emit folderSelected(folderPath);
+        }
+    }
+}

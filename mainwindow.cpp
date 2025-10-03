@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 #include <QtMultimedia/QtMultimedia>
 #include <QtMultimedia/QAudioOutput>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -17,6 +18,11 @@ MainWindow::MainWindow(QWidget *parent)
     audioOut->setVolume(0.5);
 
     player->setSource(QUrl::fromLocalFile("../../music/05 - Horizon.flac"));
+    connect(ui->FileBrowser, &FileBrowserWidget::folderSelected,
+            ui->MainView, &MediaViewWidget::displayFolder);
+
+    connect(ui->MainView, &MediaViewWidget::fileDoubleClicked,
+            ui->PlayerControls, &PlayerControlsWidget::setCurMusic);
 }
 
 MainWindow::~MainWindow()

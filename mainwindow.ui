@@ -14,29 +14,282 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow {
-    background-color: #2b2b2b;
+   <string notr="true">/* Main Window Background */
+QMainWindow {
+    background-color: #1B4332;
+    color: #E8F5E8;
 }
-</string>
+
+/* General Widget Styling */
+QWidget {
+    background-color: #1B4332;
+    color: #E8F5E8;
+    font-family: &quot;Segoe UI&quot;, Arial, sans-serif;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #2D5A3D;
+    color: #E8F5E8;
+    border: 2px solid #B8860B;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background-color: #B8860B;
+    border-color: #DAA520;
+    color: #1B4332;
+}
+
+QPushButton:pressed {
+    background-color: #8B6914;
+    border-color: #8B6914;
+    color: #E8F5E8;
+}
+
+QPushButton:disabled {
+    background-color: #0F2A1D;
+    color: #6B8F71;
+    border-color: #2F4538;
+}
+
+/* Text Input Fields */
+QLineEdit, QTextEdit, QPlainTextEdit {
+    background-color: #0F2A1D;
+    color: #E8F5E8;
+    border: 2px solid #2F4538;
+    border-radius: 4px;
+    padding: 6px;
+    selection-background-color: #B8860B;
+}
+
+QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus {
+    border-color: #DAA520;
+}
+
+/* Labels */
+QLabel {
+    color: #E8F5E8;
+    background-color: transparent;
+}
+
+/* Combo Boxes */
+QComboBox {
+    background-color: #2D5A3D;
+    color: #E8F5E8;
+    border: 2px solid #B8860B;
+    border-radius: 4px;
+    padding: 6px;
+}
+
+QComboBox::drop-down {
+    border: none;
+    background-color: #B8860B;
+    width: 20px;
+}
+
+QComboBox::down-arrow {
+    image: none;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #1B4332;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #2D5A3D;
+    color: #E8F5E8;
+    border: 1px solid #B8860B;
+    selection-background-color: #B8860B;
+    selection-color: #1B4332;
+}
+
+/* List Widgets */
+QListWidget {
+    background-color: #0F2A1D;
+    color: #E8F5E8;
+    border: 2px solid #2F4538;
+    border-radius: 4px;
+    alternate-background-color: #1B4332;
+}
+
+QListWidget::item:selected {
+    background-color: #B8860B;
+    color: #1B4332;
+}
+
+QListWidget::item:hover {
+    background-color: #8B6914;
+    color: #E8F5E8;
+}
+
+/* Table Widgets */
+QTableWidget {
+    background-color: #0F2A1D;
+    color: #E8F5E8;
+    border: 2px solid #2F4538;
+    gridline-color: #2F4538;
+    alternate-background-color: #1B4332;
+}
+
+QTableWidget::item:selected {
+    background-color: #B8860B;
+    color: #1B4332;
+}
+
+QHeaderView::section {
+    background-color: #2D5A3D;
+    color: #DAA520;
+    border: 1px solid #B8860B;
+    padding: 6px;
+    font-weight: bold;
+}
+
+/* Scroll Bars */
+QScrollBar:vertical {
+    background-color: #0F2A1D;
+    width: 16px;
+    border-radius: 8px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #B8860B;
+    border-radius: 8px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #DAA520;
+}
+
+QScrollBar:horizontal {
+    background-color: #0F2A1D;
+    height: 16px;
+    border-radius: 8px;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #B8860B;
+    border-radius: 8px;
+    min-width: 20px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background-color: #DAA520;
+}
+
+/* Check Boxes and Radio Buttons */
+QCheckBox, QRadioButton {
+    color: #E8F5E8;
+    spacing: 8px;
+}
+
+QCheckBox::indicator, QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+}
+
+QCheckBox::indicator:unchecked, QRadioButton::indicator:unchecked {
+    border: 2px solid #B8860B;
+    background-color: #0F2A1D;
+    border-radius: 3px;
+}
+
+QCheckBox::indicator:checked, QRadioButton::indicator:checked {
+    border: 2px solid #DAA520;
+    background-color: #B8860B;
+    border-radius: 3px;
+}
+
+/* Sliders */
+QSlider::groove:horizontal {
+    border: 1px solid #2F4538;
+    height: 6px;
+    background-color: #0F2A1D;
+    border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+    background-color: #B8860B;
+    border: 2px solid #DAA520;
+    width: 16px;
+    border-radius: 8px;
+    margin: -6px 0;
+}
+
+QSlider::handle:horizontal:hover {
+    background-color: #DAA520;
+}
+
+/* Progress Bars */
+QProgressBar {
+    border: 2px solid #2F4538;
+    border-radius: 4px;
+    background-color: #0F2A1D;
+    text-align: center;
+    color: #E8F5E8;
+}
+
+QProgressBar::chunk {
+    background-color: #B8860B;
+    border-radius: 2px;
+}
+
+/* Menu Bar */
+QMenuBar {
+    background-color: #2D5A3D;
+    color: #E8F5E8;
+    border-bottom: 2px solid #B8860B;
+}
+
+QMenuBar::item:selected {
+    background-color: #B8860B;
+    color: #1B4332;
+}
+
+QMenu {
+    background-color: #2D5A3D;
+    color: #E8F5E8;
+    border: 1px solid #B8860B;
+}
+
+QMenu::item:selected {
+    background-color: #B8860B;
+    color: #1B4332;
+}
+
+/* Status Bar */
+QStatusBar {
+    background-color: #2D5A3D;
+    color: #DAA520;
+    border-top: 1px solid #B8860B;
+}</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="10,1">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="FileBrowserWidget" name="FileBrowser" native="true"/>
+       <widget class="FileBrowserWidget" name="FileBrowser" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="3,1">
-        <item>
-         <widget class="QWidget" name="MainView" native="true"/>
-        </item>
-        <item>
-         <widget class="PlayerControlsWidget" name="PlayerControls" native="true"/>
-        </item>
-       </layout>
+       <widget class="MediaViewWidget" name="MainView" native="true"/>
       </item>
      </layout>
+    </item>
+    <item>
+     <widget class="PlayerControlsWidget" name="PlayerControls" native="true"/>
     </item>
    </layout>
   </widget>
@@ -46,7 +299,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
@@ -91,6 +344,12 @@
    <class>FileBrowserWidget</class>
    <extends>QWidget</extends>
    <header>filebrowserwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MediaViewWidget</class>
+   <extends>QWidget</extends>
+   <header>mediaviewwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

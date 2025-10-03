@@ -16,6 +16,7 @@ public:
     explicit PlayerControlsWidget(QWidget *parent = nullptr);
     ~PlayerControlsWidget();
     void setPlayer(QMediaPlayer *p);
+    void setCurMusic(QString filePath);
 
 private slots:
     void on_PlayPause_clicked();

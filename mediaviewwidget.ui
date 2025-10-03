@@ -13,21 +13,15 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="verticalLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>-20</y>
-     <width>921</width>
-     <height>591</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout_6">
-    <item>
-     <widget class="QListView" name="mediaView"/>
-    </item>
-   </layout>
-  </widget>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_6">
+     <item>
+      <widget class="QTableWidget" name="mediaView"/>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

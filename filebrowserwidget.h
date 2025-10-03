@@ -16,10 +16,11 @@ public:
     explicit FileBrowserWidget(QWidget *parent = nullptr);
     ~FileBrowserWidget();
     void changeRoot();
-
 private slots:
-    void on_chooseRoot_clicked();
+    void on_treeView_doubleClicked(const QModelIndex &index);
 
+signals:
+    void folderSelected(const QString &folderPath);
 private:
     Ui::FileBrowserWidget *ui;
     QFileSystemModel *model = nullptr;

@@ -56,3 +56,15 @@ void PlayerControlsWidget::on_Volume_valueChanged(int value)
     player->audioOutput()->setVolume(value * 0.01);
 }
 
+
+void PlayerControlsWidget::setCurMusic(QString filePath) {
+    if (!player) return;
+
+    QUrl path = QUrl::fromLocalFile(filePath);
+
+    if (path.isLocalFile() && path.isValid()) {
+        player->setSource(path);
+        on_PlayPause_clicked();
+    }
+
+}
