@@ -19,6 +19,8 @@ public:
 
 private slots:
     void changeRoot();
+    void actionAbout();
+    void actionExit();
 
 private:
     Ui::MainWindow *ui;

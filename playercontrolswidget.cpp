@@ -66,5 +66,6 @@ void PlayerControlsWidget::setCurMusic(QString filePath) {
         player->setSource(path);
         on_PlayPause_clicked();
     }
+    QDebug::toString(player->duration());
 
 }

@@ -19,6 +19,8 @@ public:
 private slots:
     void on_treeView_doubleClicked(const QModelIndex &index);
 
+    void on_treeView_expanded(const QModelIndex &index);
+
 signals:
     void folderSelected(const QString &folderPath);
 private:
