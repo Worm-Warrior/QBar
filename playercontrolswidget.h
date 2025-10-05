@@ -25,6 +25,8 @@ private slots:
 
     void on_Volume_valueChanged(int value);
 
+    void on_next_clicked();
+
 private:
     Ui::PlayerControlsWidget *ui;
     QMediaPlayer *player = nullptr;

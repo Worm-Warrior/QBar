@@ -9,6 +9,8 @@ MediaViewWidget::MediaViewWidget(QWidget *parent)
 {
     ui->setupUi(this);
     setupTableCols();
+    // -1 means no file playing
+    m_curIndex = -1;
 
     ui->mediaView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->mediaView->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -23,6 +25,19 @@ MediaViewWidget::MediaViewWidget(QWidget *parent)
             this, &MediaViewWidget::onItemDoubleClicked);
     connect(ui->mediaView, &QTableWidget::itemSelectionChanged,
             this, &MediaViewWidget::onSelectionChanged);
+}
+
+QString MediaViewWidget::getCurrentFile() const
+{
+    if (m_curIndex >= 0 && m_curIndex < ui->mediaView->rowCount())
+    {
+        QTableWidgetItem *pathItem = ui->mediaView->item(m_curIndex, COL_PATH);
+        if (pathItem)
+        {
+            return pathItem->text();
+        }
+    }
+    return QString();
 }
 
 void MediaViewWidget::setupTableCols() {
@@ -49,6 +64,7 @@ void MediaViewWidget::setupTableCols() {
 void MediaViewWidget::displayFolder(const QString &folderPath) {
     clearView();
 
+    // These are what we need if we want to get the next and prev!
     QStringList audioFiles = getSupportedAudioFiles(folderPath);
 
     ui->mediaView->setRowCount(audioFiles.size());
@@ -80,6 +96,7 @@ void MediaViewWidget::displayFolder(const QString &folderPath) {
 
     ui->mediaView->sortByColumn(COL_TRACK, Qt::AscendingOrder);
 
+    emit newPlayList(audioFiles);
 }
 
 MediaViewWidget::~MediaViewWidget()
@@ -197,11 +214,13 @@ MediaFile MediaViewWidget::parseMediaFile(const QString &filePath) {
 void MediaViewWidget::onItemDoubleClicked(int row, int col) {
     Q_UNUSED(col);
 
+    m_curIndex = row;
+    ui->mediaView->selectRow(row);
+
     QTableWidgetItem *pathItem = ui->mediaView->item(row, COL_PATH);
 
     if (pathItem) {
         emit fileDoubleClicked(pathItem->text());
-        qPrintable(pathItem->text());
     }
 }
 

@@ -35,6 +35,20 @@ public:
 
     void clearView();
 
+    //TODO: IMPLEMENT
+    QString getCurrentFile() const;
+
+    //TODO: IMPLEMENT
+    QString getNextFile();
+
+    //TODO: IMPLEMENT
+    QString getPrevFile();
+
+    //TODO: IMPLEMENT
+    void setCurrentFile(const QString &filePath);
+
+    int getCurrentIndex() const {return m_curIndex;}
+
     QStringList getSelectedFiles() const;
 private slots:
     void onItemDoubleClicked(int row, int column);
@@ -45,6 +59,7 @@ private:
     void setupTableCols();
     MediaFile parseMediaFile(const QString &filePath);
     QStringList getSupportedAudioFiles(const QString &folderPath);
+    int m_curIndex;
 
     enum ColIndex {
         COL_TRACK = 0,
@@ -60,6 +75,7 @@ private:
 signals:
     void fileDoubleClicked(const QString &filePath);
     void selectionChanged(const QStringList &selectedFiles);
+    void newPlayList(const QStringList &files);
 };
 
 #endif // MEDIAVIEWWIDGET_H
