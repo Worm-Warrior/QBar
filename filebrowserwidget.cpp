@@ -29,9 +29,10 @@ void FileBrowserWidget::changeRoot()
 
         // rootIndex is guaranteed to belong to 'model'
         ui->treeView->setRootIndex(rootIndex);
+
+        emit folderSelected(dir);
     }
 }
-
 
 void FileBrowserWidget::on_treeView_doubleClicked(const QModelIndex &index)
 {
