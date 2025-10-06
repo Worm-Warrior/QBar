@@ -10,11 +10,19 @@ PlayerControlsWidget::PlayerControlsWidget(QWidget *parent)
     ui->Volume->setMinimum(0);
     ui->Volume->setPageStep(5);
     ui->Volume->setValue(50);
+    userIsSeeking = false;
 
     connect(ui->nextButton, &QPushButton::clicked,
             this, &PlayerControlsWidget::nextClicked);
     connect(ui->prevButton, &QPushButton::clicked,
             this, &PlayerControlsWidget::prevClicked);
+
+    connect(player, &QMediaPlayer::positionChanged, this, &PlayerControlsWidget::on_positionChanged);
+    connect(player, &QMediaPlayer::durationChanged, this, &PlayerControlsWidget::on_durationChanged);
+    connect(ui->seekBar, &QSlider::sliderReleased, this, &PlayerControlsWidget::on_seekBar_sliderReleased);
+    connect(ui->seekBar, &QSlider::sliderPressed,
+            this, &PlayerControlsWidget::on_seekBar_sliderPressed);
+
 }
 
 PlayerControlsWidget::~PlayerControlsWidget()
@@ -58,7 +66,7 @@ void PlayerControlsWidget::on_Volume_valueChanged(int value)
 {
     if (!player) return;
 
-    player->audioOutput()->setVolume(value * 0.01);
+    player->audioOutput()->setVolume(value/100);
 }
 
 
@@ -84,3 +92,36 @@ void PlayerControlsWidget::playPrev(QString filePath)
 {
     setCurMusic(filePath);
 }
+
+void PlayerControlsWidget::on_durationChanged(qint64 duration)
+{
+    ui->seekBar->setMaximum(duration);
+}
+
+void PlayerControlsWidget::on_positionChanged(qint64 position)
+{
+    if (userIsSeeking) {return;}
+
+    blockSignals(true);
+    ui->seekBar->setValue(position);
+    blockSignals(false);
+}
+
+void PlayerControlsWidget::on_seekBar_sliderMoved(int position)
+{
+    ui->seekBar->setValue(position);
+}
+
+
+void PlayerControlsWidget::on_seekBar_sliderReleased()
+{
+    userIsSeeking = false;
+    player->setPosition(ui->seekBar->value());
+}
+
+
+void PlayerControlsWidget::on_seekBar_sliderPressed()
+{
+    userIsSeeking = true;
+}
+

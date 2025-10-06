@@ -30,6 +30,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->PlayerControls, &PlayerControlsWidget::prevClicked, this, &MainWindow::playPrevTrack);
     connect(ui->PlayerControls->player, &QMediaPlayer::mediaStatusChanged, this, &MainWindow::loopTracks);
 
+    connect(ui->PlayerControls->player, &QMediaPlayer::positionChanged, ui->PlayerControls, &PlayerControlsWidget::on_positionChanged);
+    connect(ui->PlayerControls->player, &QMediaPlayer::durationChanged, ui->PlayerControls, &PlayerControlsWidget::on_durationChanged);
+
 
 }
 

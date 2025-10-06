@@ -20,11 +20,18 @@ public:
     void playNext(QString filePath);
     void playPrev(QString filePath);
     QMediaPlayer *player = nullptr;
+    void on_durationChanged(qint64 position);
+    void on_positionChanged(qint64 duration);
 
 private slots:
     void on_PlayPause_clicked();
     void on_Mute_clicked();
     void on_Volume_valueChanged(int value);
+    void on_seekBar_sliderMoved(int position);
+
+    void on_seekBar_sliderReleased();
+
+    void on_seekBar_sliderPressed();
 
 signals:
     void nextClicked();
@@ -34,6 +41,8 @@ signals:
 
 private:
     Ui::PlayerControlsWidget *ui;
+    bool userIsSeeking;
+
 };
 
 #endif // PLAYERCONTROLSWIDGET_H
