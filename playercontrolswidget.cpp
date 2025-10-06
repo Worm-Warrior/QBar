@@ -66,7 +66,7 @@ void PlayerControlsWidget::on_Volume_valueChanged(int value)
 {
     if (!player) return;
 
-    player->audioOutput()->setVolume(value/100);
+    player->audioOutput()->setVolume(value * 0.01);
 }
 
 
