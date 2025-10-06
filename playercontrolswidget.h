@@ -17,19 +17,23 @@ public:
     ~PlayerControlsWidget();
     void setPlayer(QMediaPlayer *p);
     void setCurMusic(QString filePath);
+    void playNext(QString filePath);
+    void playPrev(QString filePath);
+    QMediaPlayer *player = nullptr;
 
 private slots:
     void on_PlayPause_clicked();
-
     void on_Mute_clicked();
-
     void on_Volume_valueChanged(int value);
 
-    void on_next_clicked();
+signals:
+    void nextClicked();
+    void prevClicked();
+    void playClicked();
+    void pauseClicked();
 
 private:
     Ui::PlayerControlsWidget *ui;
-    QMediaPlayer *player = nullptr;
 };
 
 #endif // PLAYERCONTROLSWIDGET_H

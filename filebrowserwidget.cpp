@@ -36,19 +36,22 @@ void FileBrowserWidget::changeRoot()
 
 void FileBrowserWidget::on_treeView_doubleClicked(const QModelIndex &index)
 {
-    QFileSystemModel *model = qobject_cast<QFileSystemModel*>(ui->treeView->model());
-    if (model)
-    {
-        QString folderPath = model->filePath(index);
-
-        if (QFileInfo(folderPath).isDir())
-        {
-            emit folderSelected(folderPath);
-        }
-    }
+    handleChangeSelect(index);
 }
 
 void FileBrowserWidget::on_treeView_expanded(const QModelIndex &index)
+{
+    handleChangeSelect(index);
+}
+
+
+void FileBrowserWidget::on_treeView_clicked(const QModelIndex &index)
+{
+    handleChangeSelect(index);
+}
+
+
+void FileBrowserWidget::handleChangeSelect(const QModelIndex &index)
 {
     QFileSystemModel *model = qobject_cast<QFileSystemModel*>(ui->treeView->model());
     if (model)
@@ -60,7 +63,4 @@ void FileBrowserWidget::on_treeView_expanded(const QModelIndex &index)
             emit folderSelected(folderPath);
         }
     }
-
-
 }
-

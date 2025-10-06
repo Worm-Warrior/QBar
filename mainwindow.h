@@ -21,6 +21,9 @@ private slots:
     void changeRoot();
     void actionAbout();
     void actionExit();
+    void playNextTrack();
+    void playPrevTrack();
+    void loopTracks();
 
 private:
     Ui::MainWindow *ui;

@@ -10,6 +10,11 @@ PlayerControlsWidget::PlayerControlsWidget(QWidget *parent)
     ui->Volume->setMinimum(0);
     ui->Volume->setPageStep(5);
     ui->Volume->setValue(50);
+
+    connect(ui->nextButton, &QPushButton::clicked,
+            this, &PlayerControlsWidget::nextClicked);
+    connect(ui->prevButton, &QPushButton::clicked,
+            this, &PlayerControlsWidget::prevClicked);
 }
 
 PlayerControlsWidget::~PlayerControlsWidget()
@@ -70,7 +75,12 @@ void PlayerControlsWidget::setCurMusic(QString filePath) {
 
 }
 
-void PlayerControlsWidget::on_next_clicked()
+void PlayerControlsWidget::playNext(QString filePath)
 {
+    setCurMusic(filePath);
 }
 
+void PlayerControlsWidget::playPrev(QString filePath)
+{
+    setCurMusic(filePath);
+}

@@ -75,7 +75,8 @@ private:
 signals:
     void fileDoubleClicked(const QString &filePath);
     void selectionChanged(const QStringList &selectedFiles);
-    void newPlayList(const QStringList &files);
+    void newPlaylist(const QStringList &files);
+    void endOfPlaylist();
 };
 
 #endif // MEDIAVIEWWIDGET_H

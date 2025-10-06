@@ -40,6 +40,45 @@ QString MediaViewWidget::getCurrentFile() const
     return QString();
 }
 
+QString MediaViewWidget::getNextFile()
+{
+    if (ui->mediaView->rowCount() == 0)
+    {
+        return QString();
+    }
+
+    m_curIndex++;
+
+    if (m_curIndex >= ui->mediaView->rowCount())
+    {
+        m_curIndex = 0;
+    }
+
+    ui->mediaView->selectRow(m_curIndex);
+
+    return getCurrentFile();
+}
+
+QString MediaViewWidget::getPrevFile()
+{
+    if (ui->mediaView->rowCount() == 0)
+    {
+        return QString();
+    }
+
+    m_curIndex--;
+
+    if (m_curIndex < 0)
+    {
+        m_curIndex = 0;
+    }
+
+    ui->mediaView->selectRow(m_curIndex);
+
+    return getCurrentFile();
+}
+
+
 void MediaViewWidget::setupTableCols() {
     ui->mediaView->setColumnCount(COL_COUNT);
 
@@ -96,7 +135,7 @@ void MediaViewWidget::displayFolder(const QString &folderPath) {
 
     ui->mediaView->sortByColumn(COL_TRACK, Qt::AscendingOrder);
 
-    emit newPlayList(audioFiles);
+    emit newPlaylist(audioFiles);
 }
 
 MediaViewWidget::~MediaViewWidget()

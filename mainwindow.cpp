@@ -3,6 +3,7 @@
 #include <QtMultimedia/QtMultimedia>
 #include <QtMultimedia/QAudioOutput>
 #include <QMessageBox>
+#include <qpushbutton.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -24,6 +25,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->MainView, &MediaViewWidget::fileDoubleClicked,
             ui->PlayerControls, &PlayerControlsWidget::setCurMusic);
+
+    connect(ui->PlayerControls, &PlayerControlsWidget::nextClicked, this, &MainWindow::playNextTrack);
+    connect(ui->PlayerControls, &PlayerControlsWidget::prevClicked, this, &MainWindow::playPrevTrack);
+    connect(ui->PlayerControls->player, &QMediaPlayer::mediaStatusChanged, this, &MainWindow::loopTracks);
+
+
 }
 
 MainWindow::~MainWindow()
@@ -57,5 +64,29 @@ void MainWindow::actionExit() {
     } else {
         return;
     }
+}
 
+void MainWindow::playNextTrack()
+{
+    QString next = ui->MainView->getNextFile();
+    if (!next.isEmpty()) {
+        ui->PlayerControls->setCurMusic(next);
+    }
+
+}
+
+void MainWindow::playPrevTrack()
+{
+    QString prev = ui->MainView->getPrevFile();
+    if (!prev.isEmpty()) {
+        ui->PlayerControls->setCurMusic(prev);
+    }
+}
+
+void MainWindow::loopTracks()
+{
+    if (ui->PlayerControls->player->mediaStatus() == QMediaPlayer::EndOfMedia)
+    {
+        playNextTrack();
+    }
 }
