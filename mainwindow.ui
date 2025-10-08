@@ -222,6 +222,23 @@ QSlider::handle:horizontal:hover {
     background-color: #DAA520;
 }
 
+QSlider::sub-page:horizontal {
+    background-color: #B8860B;
+    border-radius: 3px;
+}
+
+QSlider::add-page:horizontal {
+    background-color: #0F2A1D;
+    border-radius: 3px;
+}
+
+/* This is the key part for tick marks */
+QSlider::tick-mark:horizontal {
+    background-color: #B8860B;
+    width: 8px;
+    height: 4px;
+}
+
 /* Progress Bars */
 QProgressBar {
     border: 2px solid #2F4538;
@@ -298,7 +315,7 @@ QStatusBar {
       <property name="maximumSize">
        <size>
         <width>16777215</width>
-        <height>50</height>
+        <height>75</height>
        </size>
       </property>
      </widget>

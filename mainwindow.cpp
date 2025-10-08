@@ -33,7 +33,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->PlayerControls->player, &QMediaPlayer::positionChanged, ui->PlayerControls, &PlayerControlsWidget::on_positionChanged);
     connect(ui->PlayerControls->player, &QMediaPlayer::durationChanged, ui->PlayerControls, &PlayerControlsWidget::on_durationChanged);
 
-
 }
 
 MainWindow::~MainWindow()

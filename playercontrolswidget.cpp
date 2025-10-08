@@ -11,6 +11,8 @@ PlayerControlsWidget::PlayerControlsWidget(QWidget *parent)
     ui->Volume->setPageStep(5);
     ui->Volume->setValue(50);
     userIsSeeking = false;
+    ui->seekBar->setTickPosition(QSlider::TicksAbove); // or TicksBothSides for testing
+    ui->seekBar->setTickInterval(10); // Use a small test value first
 
     connect(ui->nextButton, &QPushButton::clicked,
             this, &PlayerControlsWidget::nextClicked);
@@ -96,15 +98,29 @@ void PlayerControlsWidget::playPrev(QString filePath)
 void PlayerControlsWidget::on_durationChanged(qint64 duration)
 {
     ui->seekBar->setMaximum(duration);
+
+    QTime totalTime(0, 0);
+    totalTime = totalTime.addMSecs(duration);
+    ui->maxDuration->setText(totalTime.toString("mm:ss"));
+
+   // ui->seekBar->setTickInterval(duration / 5000);
+
 }
 
 void PlayerControlsWidget::on_positionChanged(qint64 position)
 {
-    if (userIsSeeking) {return;}
+    if (userIsSeeking) {
+        //TODO: make it so that the user can see the time update in real time?
+        return;
+    }
 
     blockSignals(true);
     ui->seekBar->setValue(position);
     blockSignals(false);
+
+    QTime currentTime(0, 0);
+    currentTime = currentTime.addMSecs(position);
+    ui->curTime->setText(currentTime.toString("mm:ss"));
 }
 
 void PlayerControlsWidget::on_seekBar_sliderMoved(int position)
