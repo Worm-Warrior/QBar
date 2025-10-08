@@ -40,6 +40,7 @@ endif()
 target_link_libraries(QBar PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Multimedia
+    tag
 )
 
 # Add root source directory to include path (needed for promoted widgets)

@@ -2,6 +2,10 @@
 #include "ui_mediaviewwidget.h"
 #include <qdir.h>
 #include <qdiriterator.h>
+#include <QMediaMetaData>
+#include <taglib/fileref.h>
+#include <taglib/tag.h>
+#include <taglib/audioproperties.h>
 
 MediaViewWidget::MediaViewWidget(QWidget *parent)
     : QWidget(parent)
@@ -213,38 +217,23 @@ QStringList MediaViewWidget::getSelectedFiles() const {
 
 MediaFile MediaViewWidget::parseMediaFile(const QString &filePath) {
     MediaFile mediaFile;
+    TagLib::FileRef f(filePath.toUtf8().constData());
     mediaFile.filePath = filePath;
 
     QFileInfo fileInfo(filePath);
 
-    // Basic info from file system
     mediaFile.format = fileInfo.suffix().toUpper();
     mediaFile.fileSize = fileInfo.size();
 
     // Extract basic info from filename
-    QString baseName = fileInfo.baseName();
-    mediaFile.title = baseName;
+    mediaFile.title = QString::fromStdString(f.tag()->title().to8Bit(true));
+    mediaFile.artist = QString::fromStdString(f.tag()->artist().to8Bit(true));
+    mediaFile.album = QString::fromStdString(f.tag()->album().to8Bit(true));
+    mediaFile.trackNumber = f.tag()->track();
+    int secs = f.audioProperties()->length() % 60;
+    int mins = f.audioProperties()->length() / 60;
 
-    // Try to parse track number from filename (common format: "01 - Song Name.mp3")
-    QRegularExpression trackRegex("^(\\d+)");
-    QRegularExpressionMatch match = trackRegex.match(baseName);
-    if (match.hasMatch()) {
-        mediaFile.trackNumber = match.captured(1).toInt();
-        // Remove track number from title
-        mediaFile.title = baseName.mid(match.capturedLength()).trimmed();
-        if (mediaFile.title.startsWith("-") || mediaFile.title.startsWith(".")) {
-            mediaFile.title = mediaFile.title.mid(1).trimmed();
-        }
-    } else {
-        mediaFile.trackNumber = 0;
-    }
-
-    // Get parent directory as potential album name
-    mediaFile.album = fileInfo.dir().dirName();
-
-    // Placeholder values (replace with actual metadata parsing)
-    mediaFile.artist = "Unknown Artist";
-    mediaFile.duration = "0:00";
+    mediaFile.duration = QString("%1:%2").arg(mins, 2, 10, QChar('0')).arg(secs, 2, 10, QChar('0'));
 
     return mediaFile;
 
