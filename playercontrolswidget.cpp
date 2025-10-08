@@ -30,6 +30,8 @@ PlayerControlsWidget::PlayerControlsWidget(QWidget *parent)
     ui->PlayPause->setIcon(QIcon("../../icons/play-circle.png"));
     ui->prevButton->setText("");
     ui->nextButton->setText("");
+
+    ui->Mute->setIcon(QIcon("../../icons/unmuted.png"));
 }
 
 PlayerControlsWidget::~PlayerControlsWidget()
@@ -64,9 +66,11 @@ void PlayerControlsWidget::on_Mute_clicked()
     if (player->audioOutput()->isMuted()) {
         player->audioOutput()->setMuted(false);
         ui->Mute->setText("Mute");
+        ui->Mute->setIcon(QIcon("../../icons/unmuted.png"));
     } else {
         player->audioOutput()->setMuted(true);
         ui->Mute->setText("Unmute");
+        ui->Mute->setIcon(QIcon("../../icons/muted.png"));
     }
 }
 
