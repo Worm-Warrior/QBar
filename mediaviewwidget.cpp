@@ -117,6 +117,11 @@ void MediaViewWidget::displayFolder(const QString &folderPath) {
     for (int i = 0; i < audioFiles.size(); ++i) {
         MediaFile mediaFile = parseMediaFile(audioFiles[i]);
 
+        auto *trackItem = new QTableWidgetItem();
+        trackItem->setData(Qt::DisplayRole, mediaFile.trackNumber);
+        trackItem->setData(Qt::UserRole, mediaFile.trackNumber);
+        ui->mediaView->setItem(i, COL_TRACK, trackItem);
+
         ui->mediaView->setItem(i, COL_TITLE,
                            new QTableWidgetItem(mediaFile.title));
         ui->mediaView->setItem(i, COL_ARTIST,
@@ -130,15 +135,12 @@ void MediaViewWidget::displayFolder(const QString &folderPath) {
         ui->mediaView->setItem(i, COL_PATH,
                            new QTableWidgetItem(mediaFile.filePath));
 
-        auto *trackItem = new QTableWidgetItem();
-        trackItem->setData(Qt::DisplayRole, mediaFile.trackNumber);
-        trackItem->setData(Qt::UserRole, mediaFile.trackNumber);
-        ui->mediaView->setItem(i, COL_TRACK, trackItem);
     }
 
     ui->mediaView->setSortingEnabled(true);
 
     ui->mediaView->sortByColumn(COL_TRACK, Qt::AscendingOrder);
+    ui->mediaView->setColumnWidth(COL_TRACK, 80);
 
     emit newPlaylist(audioFiles);
 }

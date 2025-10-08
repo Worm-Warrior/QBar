@@ -11,8 +11,6 @@ PlayerControlsWidget::PlayerControlsWidget(QWidget *parent)
     ui->Volume->setPageStep(5);
     ui->Volume->setValue(50);
     userIsSeeking = false;
-    ui->seekBar->setTickPosition(QSlider::TicksAbove); // or TicksBothSides for testing
-    ui->seekBar->setTickInterval(10); // Use a small test value first
 
     connect(ui->nextButton, &QPushButton::clicked,
             this, &PlayerControlsWidget::nextClicked);
@@ -25,6 +23,13 @@ PlayerControlsWidget::PlayerControlsWidget(QWidget *parent)
     connect(ui->seekBar, &QSlider::sliderPressed,
             this, &PlayerControlsWidget::on_seekBar_sliderPressed);
 
+
+    //ui->nextButton->setLayoutDirection(Qt::RightToLeft);
+    ui->nextButton->setIcon(QIcon("../../icons/skip-next.png"));
+    ui->prevButton->setIcon(QIcon("../../icons/skip-previous.png"));
+    ui->PlayPause->setIcon(QIcon("../../icons/play-circle.png"));
+    ui->prevButton->setText("");
+    ui->nextButton->setText("");
 }
 
 PlayerControlsWidget::~PlayerControlsWidget()
@@ -43,9 +48,11 @@ void PlayerControlsWidget::on_PlayPause_clicked()
     if (player->isPlaying()) {
         player->pause();
         ui->PlayPause->setText("Play");
+        ui->PlayPause->setIcon(QIcon("../../icons/play-circle.png"));
     } else {
         player->play();
         ui->PlayPause->setText("Pause");
+        ui->PlayPause->setIcon(QIcon("../../icons/pause-circle.png"));
     }
 }
 
@@ -102,9 +109,6 @@ void PlayerControlsWidget::on_durationChanged(qint64 duration)
     QTime totalTime(0, 0);
     totalTime = totalTime.addMSecs(duration);
     ui->maxDuration->setText(totalTime.toString("mm:ss"));
-
-   // ui->seekBar->setTickInterval(duration / 5000);
-
 }
 
 void PlayerControlsWidget::on_positionChanged(qint64 position)
