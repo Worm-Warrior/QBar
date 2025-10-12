@@ -33,6 +33,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->PlayerControls->player, &QMediaPlayer::positionChanged, ui->PlayerControls, &PlayerControlsWidget::on_positionChanged);
     connect(ui->PlayerControls->player, &QMediaPlayer::durationChanged, ui->PlayerControls, &PlayerControlsWidget::on_durationChanged);
 
+    connect(ui->PlayerControls->player, &QMediaPlayer::metaDataChanged,
+            ui->PlayerControls, &PlayerControlsWidget::updateInfoLabels);
+
+    QString streamUrl = QString("http://192.168.4.165:4533/rest/stream.view?id=%1&u=%2&p=%3&v=1.16.1&c=QtPlayer")
+                            .arg("bf6add46d366f6b30734bb22a741459d")
+                            .arg("admin")
+                            .arg("rat");
+
+    ui->PlayerControls->player->setSource(QUrl(streamUrl));
+    ui->PlayerControls->player->play();
 }
 
 MainWindow::~MainWindow()

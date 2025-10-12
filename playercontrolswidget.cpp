@@ -31,6 +31,16 @@ PlayerControlsWidget::PlayerControlsWidget(QWidget *parent)
     ui->prevButton->setText("");
     ui->nextButton->setText("");
 
+    ui->trackTitle->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    ui->trackTitle->setTextInteractionFlags(Qt::NoTextInteraction);
+    ui->trackTitle->setWordWrap(false);
+    ui->trackTitle->setFixedWidth(200);
+
+    ui->trackAlbum->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    ui->trackAlbum->setTextInteractionFlags(Qt::NoTextInteraction);
+    ui->trackAlbum->setWordWrap(false);
+    ui->trackAlbum->setFixedWidth(200);
+
     ui->Mute->setIcon(QIcon("../../icons/unmuted.png"));
 }
 
@@ -92,8 +102,10 @@ void PlayerControlsWidget::setCurMusic(QString filePath) {
         player->setSource(path);
         on_PlayPause_clicked();
     }
-    QDebug::toString(player->duration());
 
+    if (player->mediaStatus() == QMediaPlayer::MediaStatus::LoadedMedia) {
+        qInfo() << "Loaded media";
+    }
 }
 
 void PlayerControlsWidget::playNext(QString filePath)
@@ -149,3 +161,19 @@ void PlayerControlsWidget::on_seekBar_sliderPressed()
     userIsSeeking = true;
 }
 
+void PlayerControlsWidget::updateInfoLabels() {
+
+    //TODO: make this not dumb and add some sort of scrolling text instead of this.
+    qInfo() << player->metaData().value(QMediaMetaData::Title);
+
+    QString trackTitle = player->metaData().stringValue(QMediaMetaData::Title);
+    QString album = player->metaData().stringValue(QMediaMetaData::AlbumTitle);
+
+    QFontMetrics fmTitle(ui->trackTitle->font());
+    QFontMetrics fmAlbum(ui->trackAlbum->font());
+    QString elidedTitle = fmTitle.elidedText(trackTitle, Qt::ElideRight, ui->trackTitle->width());
+    QString elidedAlbum = fmAlbum.elidedText(album, Qt::ElideRight, ui->trackAlbum->width());
+
+    ui->trackTitle->setText(elidedTitle);
+    ui->trackAlbum->setText(elidedAlbum);
+}
