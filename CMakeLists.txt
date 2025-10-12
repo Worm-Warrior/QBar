@@ -29,6 +29,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         filebrowserwidget.h filebrowserwidget.cpp filebrowserwidget.ui
         mediaviewwidget.h mediaviewwidget.cpp mediaviewwidget.ui
+        remotefilebrowser.h remotefilebrowser.cpp remotefilebrowser.ui
+        remotemediaview.h remotemediaview.cpp remotemediaview.ui
     )
 else()
     add_executable(QBar
