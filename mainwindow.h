@@ -16,6 +16,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    QString username;
+    QString password;
+    QString serverUrl;
 
 private slots:
     void changeRoot();
@@ -24,6 +27,7 @@ private slots:
     void playNextTrack();
     void playPrevTrack();
     void loopTracks();
+    void remoteModeToggle();
 
 private:
     Ui::MainWindow *ui;

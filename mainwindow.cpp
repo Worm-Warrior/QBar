@@ -13,12 +13,25 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->chooseRoot, &QAction::triggered, this, &MainWindow::changeRoot);
     connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::actionAbout);
     connect(ui->actionExit, &QAction::triggered, this, &MainWindow::actionExit);
+    connect(ui->actionRemoteModeSwitch, &QAction::triggered, this, &MainWindow::remoteModeToggle);
     QMediaPlayer *player = new QMediaPlayer(this);
     QAudioOutput *audioOut = new QAudioOutput(this);
     player->setAudioOutput(audioOut);
 
+    // Hard code these for now.
+    username = "admin";
+    password = "rat";
+
     ui->PlayerControls->setPlayer(player);
     audioOut->setVolume(0.5);
+
+
+    ui->browserStack->setCurrentIndex(0);
+    ui->viewStack->setCurrentIndex(0);
+
+    ui->RemoteBrowser->show();
+
+    connect(ui->actionRemoteModeSwitch, &QAction::toggled, this, &MainWindow::remoteModeToggle);
 
     connect(ui->FileBrowser, &FileBrowserWidget::folderSelected,
             ui->MainView, &MediaViewWidget::displayFolder);
@@ -36,13 +49,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->PlayerControls->player, &QMediaPlayer::metaDataChanged,
             ui->PlayerControls, &PlayerControlsWidget::updateInfoLabels);
 
+
     QString streamUrl = QString("http://192.168.4.165:4533/rest/stream.view?id=%1&u=%2&p=%3&v=1.16.1&c=QtPlayer")
                             .arg("bf6add46d366f6b30734bb22a741459d")
-                            .arg("admin")
-                            .arg("rat");
+                            .arg(username)
+                            .arg(password);
 
-    ui->PlayerControls->player->setSource(QUrl(streamUrl));
-    ui->PlayerControls->player->play();
+    //ui->PlayerControls->player->setSource(QUrl(streamUrl));
+    //ui->PlayerControls->player->play();
+
+    qInfo() << "Current index:" << ui->browserStack->currentIndex();
 }
 
 MainWindow::~MainWindow()
@@ -101,4 +117,30 @@ void MainWindow::loopTracks()
     {
         playNextTrack();
     }
+}
+
+void MainWindow::remoteModeToggle() {
+
+    // This will need to be more robust later, but for now this will do.
+    if (username.isEmpty() || password.isEmpty()) {
+        QMessageBox msgBox;
+        msgBox.setText("Your username or password is empty!");
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+
+        return;
+    }
+
+    // This should never happen, but just in case!
+    Q_ASSERT(ui->viewStack->currentIndex()
+             == ui->browserStack->currentIndex());
+    // At this point they are both the same so it does not matter.
+    int currentMode = ui->browserStack->currentIndex();
+
+    int newMode = (currentMode == 0) ? 1 : 0;
+
+    ui->browserStack->setCurrentIndex(newMode);
+    ui->viewStack->setCurrentIndex(newMode);
+
+    ui->actionRemoteModeSwitch->setText(newMode == 0 ? "Remote Mode" : "Local Mode");
 }

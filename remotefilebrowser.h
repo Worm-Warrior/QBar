@@ -2,6 +2,12 @@
 #define REMOTEFILEBROWSER_H
 
 #include <QWidget>
+#include <qnetworkaccessmanager.h>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 
 namespace Ui {
 class RemoteFileBrowser;
@@ -17,6 +23,11 @@ public:
 
 private:
     Ui::RemoteFileBrowser *ui;
+    QNetworkAccessManager *networkManager;
+    void fetchArtists();
+
+private slots:
+    void onArtistsReceived(QNetworkReply *reply);
 };
 
 #endif // REMOTEFILEBROWSER_H
