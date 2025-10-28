@@ -38,7 +38,19 @@ void RemoteFileBrowser::onArtistsReceived(QNetworkReply *reply) {
         QJsonObject artists = subsonic_res["artists"].toObject();
         QJsonArray indexArray = artists["index"].toArray();
 
-        qInfo() << indexArray[0].toObject()["artist"].toArray()[0];
+        // TODO:
+        // indexArray[n] is the char of starting name so [1] is the 'a' char.
+        // Then after that we do toObject()["artist"] to get all the artists with that starting char.
+        // Then we can loop over that and display the artists.
+        qInfo() << indexArray[1].toObject()["artist"].toArray()[0];
+
+        for (int i = 0; i < indexArray.size(); i++) {
+            QJsonArray artists = indexArray[i].toObject()["artist"].toArray();
+
+            for (int j = 0; j < artists.size(); j++) {
+                qInfo() << artists[j].toObject()["name"];
+            }
+        }
 
     } else {
         qInfo() << "error" << reply->errorString() << Qt::endl;
