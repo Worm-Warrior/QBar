@@ -96,6 +96,10 @@ void MainWindow::actionExit() {
 
 void MainWindow::playNextTrack()
 {
+    if (ui->PlayerControls->shouldRepeat) {
+        ui->PlayerControls->player->setPosition(0);
+        return;
+    }
     QString next = ui->MainView->getNextFile();
     if (!next.isEmpty()) {
         ui->PlayerControls->setCurMusic(next);
@@ -105,6 +109,11 @@ void MainWindow::playNextTrack()
 
 void MainWindow::playPrevTrack()
 {
+    if (ui->PlayerControls->shouldRepeat) {
+        ui->PlayerControls->player->setPosition(0);
+        return;
+    }
+
     QString prev = ui->MainView->getPrevFile();
     if (!prev.isEmpty()) {
         ui->PlayerControls->setCurMusic(prev);

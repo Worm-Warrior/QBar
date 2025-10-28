@@ -32,11 +32,13 @@ void RemoteFileBrowser::onArtistsReceived(QNetworkReply *reply) {
         QJsonDocument doc = QJsonDocument::fromJson(response);
         QJsonObject obj = doc.object();
 
-        qInfo() << "JSON RESPONSE:" << doc.toJson(QJsonDocument::Indented);
+        //qInfo() << "JSON RESPONSE:" << doc.toJson(QJsonDocument::Indented);
 
         QJsonObject subsonic_res = obj["subsonic-response"].toObject();
         QJsonObject artists = subsonic_res["artists"].toObject();
         QJsonArray indexArray = artists["index"].toArray();
+
+        qInfo() << indexArray[0].toObject()["artist"].toArray()[0];
 
     } else {
         qInfo() << "error" << reply->errorString() << Qt::endl;

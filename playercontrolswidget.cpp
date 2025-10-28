@@ -11,6 +11,7 @@ PlayerControlsWidget::PlayerControlsWidget(QWidget *parent)
     ui->Volume->setPageStep(5);
     ui->Volume->setValue(50);
     userIsSeeking = false;
+    shouldRepeat = false;
 
     connect(ui->nextButton, &QPushButton::clicked,
             this, &PlayerControlsWidget::nextClicked);
@@ -22,6 +23,15 @@ PlayerControlsWidget::PlayerControlsWidget(QWidget *parent)
     connect(ui->seekBar, &QSlider::sliderReleased, this, &PlayerControlsWidget::on_seekBar_sliderReleased);
     connect(ui->seekBar, &QSlider::sliderPressed,
             this, &PlayerControlsWidget::on_seekBar_sliderPressed);
+    connect(ui->Repeat, &QPushButton::clicked, this, [this]{
+        shouldRepeat = !shouldRepeat;
+        if (shouldRepeat) {
+            ui->Repeat->setText("Repeat");
+        } else {
+            ui->Repeat->setText("Not Repeating");
+        }
+        qInfo() << shouldRepeat;
+    });
 
 
     //ui->nextButton->setLayoutDirection(Qt::RightToLeft);

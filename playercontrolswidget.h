@@ -23,6 +23,7 @@ public:
     void on_durationChanged(qint64 position);
     void on_positionChanged(qint64 duration);
     void updateInfoLabels();
+    bool shouldRepeat;
 
 private slots:
     void on_PlayPause_clicked();
