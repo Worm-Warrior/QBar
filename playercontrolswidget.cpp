@@ -30,8 +30,8 @@ PlayerControlsWidget::PlayerControlsWidget(QWidget *parent)
         } else {
             ui->Repeat->setText("Not Repeating");
         }
-        qInfo() << shouldRepeat;
     });
+
 
 
     //ui->nextButton->setLayoutDirection(Qt::RightToLeft);
@@ -40,6 +40,8 @@ PlayerControlsWidget::PlayerControlsWidget(QWidget *parent)
     ui->PlayPause->setIcon(QIcon("../../icons/play-circle.png"));
     ui->prevButton->setText("");
     ui->nextButton->setText("");
+    ui->trackAlbum->setText("");
+    ui->trackTitle->setText("");
 
     ui->trackTitle->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     ui->trackTitle->setTextInteractionFlags(Qt::NoTextInteraction);
