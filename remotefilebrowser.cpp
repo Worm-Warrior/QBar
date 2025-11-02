@@ -1,5 +1,6 @@
 #include "remotefilebrowser.h"
 #include "ui_remotefilebrowser.h"
+#include <qlabel.h>
 
 RemoteFileBrowser::RemoteFileBrowser(QWidget *parent)
     : QWidget(parent)
@@ -9,6 +10,8 @@ RemoteFileBrowser::RemoteFileBrowser(QWidget *parent)
     networkManager = new QNetworkAccessManager(this);
 
     connect(networkManager, &QNetworkAccessManager::finished, this, &RemoteFileBrowser::onArtistsReceived);
+
+    setupHeaders();
 
     fetchArtists();
 }
@@ -27,6 +30,7 @@ void RemoteFileBrowser::fetchArtists() {
 
 void RemoteFileBrowser::onArtistsReceived(QNetworkReply *reply) {
     if (reply->error() == QNetworkReply::NoError) {
+        ui->remoteFileBrowser->clear();
         QByteArray response = reply->readAll();
 
         QJsonDocument doc = QJsonDocument::fromJson(response);
@@ -48,11 +52,29 @@ void RemoteFileBrowser::onArtistsReceived(QNetworkReply *reply) {
             QJsonArray artists = indexArray[i].toObject()["artist"].toArray();
 
             for (int j = 0; j < artists.size(); j++) {
-                qInfo() << artists[j].toObject()["name"];
+                QTreeWidgetItem *item = new QTreeWidgetItem(ui->remoteFileBrowser);
+                QString artistName = artists[j].toObject()["name"].toString();
+                double albumCount = artists[j].toObject()["albumCount"].toDouble();
+                qInfo() << artists[j].toObject()["name"].toString() << "\t" << artists[j].toObject()["albumCount"].toDouble();
+                item->setText(COL_ARTIST, artistName);
+                item->setText(COL_ALBUM_COUNT, QString::number(albumCount));
             }
         }
 
     } else {
         qInfo() << "error" << reply->errorString() << Qt::endl;
     }
+
+}
+void RemoteFileBrowser::setupHeaders() {
+    ui->remoteFileBrowser->setColumnCount(COL_COUNT);
+
+    QStringList headers;
+
+    headers << "Artist" << "Albums";
+
+    ui->remoteFileBrowser->setHeaderLabels(headers);
+
+    ui->remoteFileBrowser->setSortingEnabled(true);
+    ui->remoteFileBrowser->sortByColumn(COL_ARTIST, Qt::SortOrder::AscendingOrder);
 }

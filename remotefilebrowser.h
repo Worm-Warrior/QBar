@@ -25,6 +25,13 @@ private:
     Ui::RemoteFileBrowser *ui;
     QNetworkAccessManager *networkManager;
     void fetchArtists();
+    void setupHeaders();
+
+    enum ColIndex {
+        COL_ARTIST = 0,
+        COL_ALBUM_COUNT,
+        COL_COUNT,
+    };
 
 private slots:
     void onArtistsReceived(QNetworkReply *reply);

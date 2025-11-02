@@ -11,6 +11,8 @@ FileBrowserWidget::FileBrowserWidget(QWidget *parent)
     QModelIndex rootIndex = model->setRootPath(startDir);
     ui->treeView->setModel(model);
     ui->treeView->setRootIndex(rootIndex);
+    ui->treeView->setSortingEnabled(true);
+    ui->treeView->sortByColumn(0, Qt::SortOrder::AscendingOrder);
 }
 
 FileBrowserWidget::~FileBrowserWidget()

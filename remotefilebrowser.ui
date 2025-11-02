@@ -17,13 +17,18 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
      <item>
-      <widget class="QTreeWidget" name="treeWidget">
+      <widget class="QTreeWidget" name="remoteFileBrowser">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
+        </property>
+       </column>
       </widget>
      </item>
     </layout>
