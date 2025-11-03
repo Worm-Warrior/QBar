@@ -8,6 +8,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <qtreewidget.h>
 
 namespace Ui {
 class RemoteFileBrowser;
@@ -26,15 +27,20 @@ private:
     QNetworkAccessManager *networkManager;
     void fetchArtists();
     void setupHeaders();
+    QHash<QString, QString> artistIdMap;
+    void onItemExpanded(QTreeWidgetItem *item);
+    void fetchArtistAlbums(QString artistId);
+    void onNetworkReply(QNetworkReply *reply);
 
     enum ColIndex {
-        COL_ARTIST = 0,
+        COL_NAME = 0,
         COL_ALBUM_COUNT,
         COL_COUNT,
     };
 
 private slots:
-    void onArtistsReceived(QNetworkReply *reply);
+    void handleArtistsRecived(QNetworkReply *reply);
+    void handleArtistAlbumsRecived(QNetworkReply *reply);
 };
 
 #endif // REMOTEFILEBROWSER_H
