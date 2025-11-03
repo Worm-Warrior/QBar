@@ -46,18 +46,25 @@ void RemoteFileBrowser::onArtistsReceived(QNetworkReply *reply) {
         // indexArray[n] is the char of starting name so [1] is the 'a' char.
         // Then after that we do toObject()["artist"] to get all the artists with that starting char.
         // Then we can loop over that and display the artists.
-        qInfo() << indexArray[1].toObject()["artist"].toArray()[0];
 
         for (int i = 0; i < indexArray.size(); i++) {
             QJsonArray artists = indexArray[i].toObject()["artist"].toArray();
+            //qInfo() << artists[i].toObject()["id"];
+            //qInfo() << indexArray[i].toObject()["artist"].toArray()[0];
 
             for (int j = 0; j < artists.size(); j++) {
                 QTreeWidgetItem *item = new QTreeWidgetItem(ui->remoteFileBrowser);
                 QString artistName = artists[j].toObject()["name"].toString();
                 double albumCount = artists[j].toObject()["albumCount"].toDouble();
-                qInfo() << artists[j].toObject()["name"].toString() << "\t" << artists[j].toObject()["albumCount"].toDouble();
+                qInfo() << artists[j].toObject();
+                //qInfo() << artists[j].toObject()["name"].toString() << "\t" << artists[j].toObject()["albumCount"].toDouble();
                 item->setText(COL_ARTIST, artistName);
                 item->setText(COL_ALBUM_COUNT, QString::number(albumCount));
+                item->setData(COL_ARTIST, Qt::UserRole, artists[j].toObject()["id"].toString());
+                item->setData(COL_ARTIST, Qt::UserRole+1, "artist");
+
+                QTreeWidgetItem *dummy = new QTreeWidgetItem(item);
+                dummy->setText(0, "LOADING");
             }
         }
 
