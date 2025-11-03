@@ -24,6 +24,12 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="styleSheet">
+        <string notr="true">QTreeView::item { 
+height: 30px; 
+font-size: 14px; 
+}</string>
+       </property>
        <column>
         <property name="text">
          <string notr="true">1</string>
