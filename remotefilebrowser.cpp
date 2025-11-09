@@ -80,7 +80,7 @@ void RemoteFileBrowser::handleArtistsRecived(QNetworkReply *reply) {
                 //qInfo() << artists[j].toObject();
                 //qInfo() << artists[j].toObject()["name"].toString() << "\t" << artists[j].toObject()["albumCount"].toDouble();
                 item->setText(COL_NAME, artistName);
-                item->setText(COL_ALBUM_COUNT, QString::number(albumCount));
+                item->setText(COL_COUNT, QString::number(albumCount));
                 item->setData(COL_NAME, Qt::UserRole, id);
                 item->setData(COL_NAME, Qt::UserRole+1, "artist");
 
@@ -109,34 +109,66 @@ void RemoteFileBrowser::setupHeaders() {
 
     ui->remoteFileBrowser->setSortingEnabled(true);
     ui->remoteFileBrowser->sortByColumn(COL_NAME, Qt::SortOrder::AscendingOrder);
+
+    ui->remoteFileBrowser->header()->setSectionResizeMode(COL_NAME, QHeaderView::Stretch);
+    ui->remoteFileBrowser->header()->setSectionResizeMode(COL_COUNT, QHeaderView::ResizeToContents);
 }
 
 void RemoteFileBrowser::onItemExpanded(QTreeWidgetItem *item) {
     QString type = item->data(COL_NAME, Qt::UserRole+1).toString();
 
     if (type == "artist") {
-        QString artistId = item->data(COL_NAME, Qt::UserRole).toString();
-        fetchArtistAlbums(artistId);
+        bool albumsAlreadyLoaded = item->data(COL_NAME, Qt::UserRole+2).toBool();
+
+        if (!albumsAlreadyLoaded) {
+            QString artistId = item->data(COL_NAME, Qt::UserRole).toString();
+            fetchArtistAlbums(artistId, item);
+        } else {
+            return;
+        }
     }
 }
 
-void RemoteFileBrowser::fetchArtistAlbums(QString artistId) {
-    qInfo() << artistId;
+void RemoteFileBrowser::fetchArtistAlbums(QString artistId, QTreeWidgetItem *parent) {
+    //qInfo() << artistId;
     QString url = "http://192.168.4.165:4533/rest/getArtist.view?id=" + artistId + "&u=admin&p=rat&v=1.16.1&c=QBar&f=json";
     QNetworkRequest rq(url);
     QNetworkReply *r = networkManager->get(rq);
     r->setProperty("requestType", "albums");
     r->setProperty("artistId", artistId);
+    // Store the parent item in the reply!
+    r->setProperty("parentItem", QVariant::fromValue(parent));
 }
 
 
 void RemoteFileBrowser::handleArtistAlbumsRecived(QNetworkReply *reply) {
+    // Convert to the right type
+    QTreeWidgetItem *parent = reply->property("parentItem").value<QTreeWidgetItem*>();
+
+    qInfo() << parent->text(COL_NAME);
+
     QByteArray response = reply->readAll();
     QJsonDocument doc = QJsonDocument::fromJson(response);
     QJsonObject obj = doc.object();
 
+    qInfo() << obj;
+
     QJsonObject subsonicResponse = obj["subsonic-response"].toObject();
     QJsonObject artist = subsonicResponse["artist"].toObject();
     QJsonArray albums = artist["album"].toArray();
-    qInfo() << albums[0].toObject()["name"];
+
+    for (int i = 0; i < parent->childCount(); i++) {
+        QTreeWidgetItem *dummy = parent->child(i);
+        qInfo() << dummy->text(COL_NAME);
+        parent->removeChild(dummy);
+    }
+
+    for (int i = 0; i < albums.size(); i++) {
+        QTreeWidgetItem *album = new QTreeWidgetItem();
+        album->setText(COL_NAME,albums[i].toObject()["name"].toString() + " - (" + QString::number(albums[i].toObject()["songCount"].toInt()) + ")");
+        parent->addChild(album);
+    }
+
+    parent->setData(COL_NAME, Qt::UserRole+2, true);
+
 }

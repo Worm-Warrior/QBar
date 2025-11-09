@@ -10,6 +10,8 @@
 #include <QJsonArray>
 #include <qtreewidget.h>
 
+Q_DECLARE_METATYPE(QTreeWidgetItem*)
+
 namespace Ui {
 class RemoteFileBrowser;
 }
@@ -29,12 +31,11 @@ private:
     void setupHeaders();
     QHash<QString, QString> artistIdMap;
     void onItemExpanded(QTreeWidgetItem *item);
-    void fetchArtistAlbums(QString artistId);
+    void fetchArtistAlbums(QString artistId, QTreeWidgetItem *parent);
     void onNetworkReply(QNetworkReply *reply);
 
     enum ColIndex {
         COL_NAME = 0,
-        COL_ALBUM_COUNT,
         COL_COUNT,
     };
 
