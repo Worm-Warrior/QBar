@@ -17,6 +17,12 @@ public:
 
 private:
     Ui::RemoteMediaView *ui;
+    void setupHeaderCols();
+
+    enum ColIndex {
+        COL_NAME = 0,
+        COL_COUNT,
+    };
 };
 
 #endif // REMOTEMEDIAVIEW_H

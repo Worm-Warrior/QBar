@@ -13,6 +13,8 @@ RemoteFileBrowser::RemoteFileBrowser(QWidget *parent)
 
     connect(ui->remoteFileBrowser, &QTreeWidget::itemExpanded, this, &RemoteFileBrowser::onItemExpanded);
 
+    connect(ui->remoteFileBrowser, &QTreeWidget::itemClicked, this, &RemoteFileBrowser::onItemSelected);
+
     setupHeaders();
 
     fetchArtists();
@@ -129,6 +131,15 @@ void RemoteFileBrowser::onItemExpanded(QTreeWidgetItem *item) {
     }
 }
 
+void RemoteFileBrowser::onItemSelected(QTreeWidgetItem *item, int row) {
+    if (item->childCount() != 0) {
+        return;
+    }
+    QString id = item->data(COL_NAME, Qt::UserRole).toString();
+
+    emit albumSelected(item);
+}
+
 void RemoteFileBrowser::fetchArtistAlbums(QString artistId, QTreeWidgetItem *parent) {
     //qInfo() << artistId;
     QString url = "http://192.168.4.165:4533/rest/getArtist.view?id=" + artistId + "&u=admin&p=rat&v=1.16.1&c=QBar&f=json";
@@ -166,6 +177,7 @@ void RemoteFileBrowser::handleArtistAlbumsRecived(QNetworkReply *reply) {
     for (int i = 0; i < albums.size(); i++) {
         QTreeWidgetItem *album = new QTreeWidgetItem();
         album->setText(COL_NAME,albums[i].toObject()["name"].toString() + " - (" + QString::number(albums[i].toObject()["songCount"].toInt()) + ")");
+        album->setData(COL_NAME, Qt::UserRole, albums[i].toObject()["id"].toString());
         parent->addChild(album);
     }
 

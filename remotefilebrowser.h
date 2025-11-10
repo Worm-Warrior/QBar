@@ -33,6 +33,7 @@ private:
     void onItemExpanded(QTreeWidgetItem *item);
     void fetchArtistAlbums(QString artistId, QTreeWidgetItem *parent);
     void onNetworkReply(QNetworkReply *reply);
+    void onItemSelected(QTreeWidgetItem *item, int row);
 
     enum ColIndex {
         COL_NAME = 0,
@@ -42,6 +43,10 @@ private:
 private slots:
     void handleArtistsRecived(QNetworkReply *reply);
     void handleArtistAlbumsRecived(QNetworkReply *reply);
+
+signals:
+    void albumSelected(QTreeWidgetItem *item);
+
 };
 
 #endif // REMOTEFILEBROWSER_H

@@ -6,9 +6,15 @@ RemoteMediaView::RemoteMediaView(QWidget *parent)
     , ui(new Ui::RemoteMediaView)
 {
     ui->setupUi(this);
+
+    setupHeaderCols();
 }
 
 RemoteMediaView::~RemoteMediaView()
 {
     delete ui;
+}
+
+void RemoteMediaView::setupHeaderCols() {
+    ui->mediaView->setColumnCount(COL_COUNT);
 }
