@@ -39,6 +39,7 @@ void RemoteMediaView::setupHeaderCols() {
     ui->mediaView->setHorizontalHeaderLabels(headers);
     ui->mediaView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->mediaView->hideColumn(COL_ID);
+    ui->mediaView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 void RemoteMediaView::fetchAlbum(QString id) {
