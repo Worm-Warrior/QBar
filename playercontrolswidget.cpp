@@ -189,3 +189,12 @@ void PlayerControlsWidget::updateInfoLabels() {
     ui->trackTitle->setText(elidedTitle);
     ui->trackAlbum->setText(elidedAlbum);
 }
+
+void PlayerControlsWidget::playRemoteMusic(QString trackId) {
+
+    QString streamUrl =
+        QString("http://192.168.4.165:4533/rest/stream.view?id=%1&u=admin&p=rat&v=1.16.1&c=QtPlayer").arg(trackId);
+
+    player->setSource(QUrl(streamUrl));
+    player->play();
+}

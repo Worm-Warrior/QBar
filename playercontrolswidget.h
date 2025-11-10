@@ -24,6 +24,7 @@ public:
     void on_positionChanged(qint64 duration);
     void updateInfoLabels();
     bool shouldRepeat;
+    void playRemoteMusic(QString trackId);
 
 private slots:
     void on_PlayPause_clicked();
