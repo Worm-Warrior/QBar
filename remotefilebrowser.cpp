@@ -137,7 +137,7 @@ void RemoteFileBrowser::onItemSelected(QTreeWidgetItem *item, int row) {
     }
     QString id = item->data(COL_NAME, Qt::UserRole).toString();
 
-    emit albumSelected(item);
+    emit albumSelected(id);
 }
 
 void RemoteFileBrowser::fetchArtistAlbums(QString artistId, QTreeWidgetItem *parent) {

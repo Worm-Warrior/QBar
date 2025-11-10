@@ -45,7 +45,7 @@ private slots:
     void handleArtistAlbumsRecived(QNetworkReply *reply);
 
 signals:
-    void albumSelected(QTreeWidgetItem *item);
+    void albumSelected(QString id);
 
 };
 

@@ -314,7 +314,7 @@ QStatusBar {
         <number>1</number>
        </property>
        <widget class="MediaViewWidget" name="MainView"/>
-       <widget class="QWidget" name="RemoteView"/>
+       <widget class="RemoteMediaView" name="RemoteView"/>
       </widget>
      </widget>
     </item>
@@ -406,6 +406,12 @@ QStatusBar {
    <class>RemoteFileBrowser</class>
    <extends>QWidget</extends>
    <header>remotefilebrowser.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RemoteMediaView</class>
+   <extends>QWidget</extends>
+   <header location="global">remotemediaview.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
