@@ -1,4 +1,5 @@
 #include "playercontrolswidget.h"
+#include "playlist.h"
 #include "ui_playercontrolswidget.h"
 #include <QTime>
 #include <qaudiooutput.h>
@@ -217,3 +218,26 @@ void PlayerControlsWidget::onPlaybackStateChanged(QMediaPlayer::PlaybackState st
         ui->PlayPause->setIcon(QIcon("../../icons/play-circle.png"));
     }
 }
+
+void PlayerControlsWidget::on_Repeat_clicked()
+{
+    repeatMode = (repeatMode + 1) % 3;
+
+    switch (repeatMode){
+    case REPEAT_OFF:
+        ui->Repeat->setText("Repeat: Off");
+        break;
+    case REPEAT_PLAYLIST:
+        ui->Repeat->setText("Repeat: Playlist");
+        break;
+    case REPEAT_SINGLE:
+        ui->Repeat->setText("Repeat: Single");
+        break;
+    default:
+        ui->Repeat->setText("Should not happen");
+        break;
+    }
+
+    emit repeatChanged(repeatMode);
+}
+

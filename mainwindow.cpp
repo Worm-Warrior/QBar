@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Create global playlist
     currentPlaylist = new Playlist(this);
+    currentPlaylist->setShuffle(false);
 
     // Setup stacks (start in local mode)
     ui->browserStack->setCurrentIndex(0);
@@ -66,6 +67,11 @@ MainWindow::MainWindow(QWidget *parent)
             ui->PlayerControls, &PlayerControlsWidget::on_durationChanged);
     connect(ui->PlayerControls->player, &QMediaPlayer::metaDataChanged,
             ui->PlayerControls, &PlayerControlsWidget::updateInfoLabels);
+    connect(ui->PlayerControls, &PlayerControlsWidget::repeatChanged,
+            this, [this](int mode){
+        currentPlaylist->setRepeat(mode);
+        qInfo() << mode;
+    });
 }
 
 MainWindow::~MainWindow()

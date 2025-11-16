@@ -181,7 +181,7 @@
      <item>
       <widget class="QPushButton" name="Repeat">
        <property name="text">
-        <string>Not Repeat</string>
+        <string>Repeat Off</string>
        </property>
       </widget>
      </item>

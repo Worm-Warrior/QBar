@@ -44,7 +44,7 @@ Track Playlist::nextTrack() {
 
     if (shuffle) {
         int curShuffle = shuffleOrder.indexOf(curIndex);
-        if (curShuffle < shuffleOrder.count()-1) {
+        if (repeat != REPEAT_SINGLE && curShuffle < shuffleOrder.count()-1) {
             curIndex = shuffleOrder[curShuffle+1];
         } else if (repeat == REPEAT_SINGLE) {
             return currentTrack();
@@ -54,12 +54,12 @@ Track Playlist::nextTrack() {
             return Track();
         }
     } else {
-        if (curIndex < trackList.count()-1) {
+        if (repeat != REPEAT_SINGLE && curIndex < trackList.count()-1) {
             curIndex++;
-        } else if (REPEAT_SINGLE) {
+        } else if (repeat == REPEAT_SINGLE) {
             // if we are repeating a single song we just get current one back.
             return currentTrack();
-        } else if (REPEAT_PLAYLIST) {
+        } else if (repeat == REPEAT_PLAYLIST) {
             // reset the playlist.
             curIndex = 0;
         }
@@ -76,7 +76,7 @@ Track Playlist::prevTrack() {
     if (shuffle) {
         int curShuffle = shuffleOrder.indexOf(curIndex);
 
-        if (curShuffle > 0) {
+        if (repeat != REPEAT_SINGLE && curShuffle > 0) {
             curIndex = shuffleOrder[curShuffle-1];
         } else if (repeat == REPEAT_SINGLE) {
             return currentTrack();
@@ -86,7 +86,7 @@ Track Playlist::prevTrack() {
             return Track();
         }
     } else {
-        if (curIndex > 0) {
+        if (repeat != REPEAT_SINGLE && curIndex > 0) {
             curIndex--;
         } else if (repeat == REPEAT_SINGLE) {
             return currentTrack();
@@ -119,7 +119,7 @@ bool Playlist::hasPrev() const {
 }
 
 void Playlist::setCurrentIndex(int index) {
-    if (index >= 0 && index < trackList.count()-1) {
+    if (index >= 0 && index <= trackList.count()-1) {
         curIndex = index;
         emit trackChanged(currentTrack());
     }
@@ -133,7 +133,7 @@ void Playlist::setShuffle(bool enabled) {
 }
 
 void Playlist::setRepeat(int selector) {
-    if (selector != REPEAT_OFF || selector != REPEAT_SINGLE || selector != REPEAT_PLAYLIST) {
+    if (selector != REPEAT_OFF && selector != REPEAT_SINGLE && selector != REPEAT_PLAYLIST) {
         return;
     } else {
         repeat = selector;

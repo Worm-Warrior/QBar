@@ -29,6 +29,7 @@ public:
 signals:
     void nextClicked();
     void prevClicked();
+    void repeatChanged(int repeatMode);
 
 private slots:
     void on_PlayPause_clicked();
@@ -38,10 +39,13 @@ private slots:
     void on_seekBar_sliderReleased();
     void on_seekBar_sliderPressed();
     void onPlaybackStateChanged(QMediaPlayer::PlaybackState state);
+    void on_Repeat_clicked();
 
 private:
     Ui::PlayerControlsWidget *ui;
     bool userIsSeeking;
+    bool shuffleOn;
+    int repeatMode;
 };
 
 #endif // PLAYERCONTROLSWIDGET_H
