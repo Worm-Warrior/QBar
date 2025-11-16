@@ -31,6 +31,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         mediaviewwidget.h mediaviewwidget.cpp mediaviewwidget.ui
         remotefilebrowser.h remotefilebrowser.cpp remotefilebrowser.ui
         remotemediaview.h remotemediaview.cpp remotemediaview.ui
+        playlist.h playlist.cpp
+
     )
 else()
     add_executable(QBar
