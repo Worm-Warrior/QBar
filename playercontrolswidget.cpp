@@ -1,59 +1,59 @@
 #include "playercontrolswidget.h"
 #include "ui_playercontrolswidget.h"
-#include <QTime>
-#include <qaudiooutput.h>
-#include <qmediametadata.h>
 
 PlayerControlsWidget::PlayerControlsWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::PlayerControlsWidget)
-    , player(nullptr)
-    , userIsSeeking(false)
 {
     ui->setupUi(this);
-
-    // Setup volume slider
     ui->Volume->setMaximum(100);
     ui->Volume->setMinimum(0);
     ui->Volume->setPageStep(5);
     ui->Volume->setValue(50);
+    userIsSeeking = false;
+    shouldRepeat = false;
 
-    // Setup icons
-    ui->nextButton->setIcon(QIcon("../../icons/skip-next.png"));
-    ui->prevButton->setIcon(QIcon("../../icons/skip-previous.png"));
-    ui->PlayPause->setIcon(QIcon("../../icons/play-circle.png"));
-    ui->Mute->setIcon(QIcon("../../icons/unmuted.png"));
-
-    // Clear button text (we're using icons)
-    ui->prevButton->setText("");
-    ui->nextButton->setText("");
-
-    // Setup track info labels
-    ui->trackTitle->setText("");
-    ui->trackTitle->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    ui->trackTitle->setTextInteractionFlags(Qt::NoTextInteraction);
-    ui->trackTitle->setWordWrap(false);
-    ui->trackTitle->setFixedWidth(200);
-
-    ui->trackAlbum->setText("");
-    ui->trackAlbum->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    ui->trackAlbum->setTextInteractionFlags(Qt::NoTextInteraction);
-    ui->trackAlbum->setWordWrap(false);
-    ui->trackAlbum->setFixedWidth(200);
-
-    // Connect button signals
     connect(ui->nextButton, &QPushButton::clicked,
             this, &PlayerControlsWidget::nextClicked);
     connect(ui->prevButton, &QPushButton::clicked,
             this, &PlayerControlsWidget::prevClicked);
 
-    // Connect seek bar signals
+    connect(player, &QMediaPlayer::positionChanged, this, &PlayerControlsWidget::on_positionChanged);
+    connect(player, &QMediaPlayer::durationChanged, this, &PlayerControlsWidget::on_durationChanged);
+    connect(ui->seekBar, &QSlider::sliderReleased, this, &PlayerControlsWidget::on_seekBar_sliderReleased);
     connect(ui->seekBar, &QSlider::sliderPressed,
             this, &PlayerControlsWidget::on_seekBar_sliderPressed);
-    connect(ui->seekBar, &QSlider::sliderReleased,
-            this, &PlayerControlsWidget::on_seekBar_sliderReleased);
-    connect(ui->seekBar, &QSlider::sliderMoved,
-            this, &PlayerControlsWidget::on_seekBar_sliderMoved);
+    connect(ui->Repeat, &QPushButton::clicked, this, [this]{
+        shouldRepeat = !shouldRepeat;
+        if (shouldRepeat) {
+            ui->Repeat->setText("Repeat");
+        } else {
+            ui->Repeat->setText("Not Repeating");
+        }
+    });
+
+
+
+    //ui->nextButton->setLayoutDirection(Qt::RightToLeft);
+    ui->nextButton->setIcon(QIcon("../../icons/skip-next.png"));
+    ui->prevButton->setIcon(QIcon("../../icons/skip-previous.png"));
+    ui->PlayPause->setIcon(QIcon("../../icons/play-circle.png"));
+    ui->prevButton->setText("");
+    ui->nextButton->setText("");
+    ui->trackAlbum->setText("");
+    ui->trackTitle->setText("");
+
+    ui->trackTitle->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    ui->trackTitle->setTextInteractionFlags(Qt::NoTextInteraction);
+    ui->trackTitle->setWordWrap(false);
+    ui->trackTitle->setFixedWidth(200);
+
+    ui->trackAlbum->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    ui->trackAlbum->setTextInteractionFlags(Qt::NoTextInteraction);
+    ui->trackAlbum->setWordWrap(false);
+    ui->trackAlbum->setFixedWidth(200);
+
+    ui->Mute->setIcon(QIcon("../../icons/unmuted.png"));
 }
 
 PlayerControlsWidget::~PlayerControlsWidget()
@@ -61,51 +61,29 @@ PlayerControlsWidget::~PlayerControlsWidget()
     delete ui;
 }
 
-void PlayerControlsWidget::setPlayer(QMediaPlayer *p)
-{
-    if (player) {
-        disconnect(player, &QMediaPlayer::playbackStateChanged,
-                   this, &PlayerControlsWidget::onPlaybackStateChanged);
-    }
+void PlayerControlsWidget::setPlayer(QMediaPlayer *p) {
     player = p;
-
-    if (player) {
-        connect(player, &QMediaPlayer::playbackStateChanged,
-                this, &PlayerControlsWidget::onPlaybackStateChanged);
-    }
 }
 
 void PlayerControlsWidget::on_PlayPause_clicked()
 {
-    if (!player) {
-        qWarning() << "Player not set!";
-        return;
-    }
+    if (!player) return;
 
-    qInfo() << "Button clicked! Current state:" << player->playbackState();
-
-    // Block signals temporarily so state change doesn't trigger during this function
-
-    if (player->playbackState() == QMediaPlayer::PlayingState) {
-        qInfo() << "Calling pause()";
+    if (player->isPlaying()) {
         player->pause();
         ui->PlayPause->setText("Play");
         ui->PlayPause->setIcon(QIcon("../../icons/play-circle.png"));
     } else {
-        qInfo() << "Calling play()";
         player->play();
         ui->PlayPause->setText("Pause");
         ui->PlayPause->setIcon(QIcon("../../icons/pause-circle.png"));
     }
-
 }
+
 
 void PlayerControlsWidget::on_Mute_clicked()
 {
-    if (!player || !player->audioOutput()) {
-        qWarning() << "Player or audio output not set!";
-        return;
-    }
+    if (!player) return;
 
     if (player->audioOutput()->isMuted()) {
         player->audioOutput()->setMuted(false);
@@ -118,13 +96,38 @@ void PlayerControlsWidget::on_Mute_clicked()
     }
 }
 
+// NOTE: use this instead of the other functions, because this will change on ALL input methods.
 void PlayerControlsWidget::on_Volume_valueChanged(int value)
 {
-    if (!player || !player->audioOutput()) {
-        return;
-    }
+    if (!player) return;
 
     player->audioOutput()->setVolume(value * 0.01);
+}
+
+
+void PlayerControlsWidget::setCurMusic(QString filePath) {
+    if (!player) return;
+
+    QUrl path = QUrl::fromLocalFile(filePath);
+
+    if (path.isLocalFile() && path.isValid()) {
+        player->setSource(path);
+        on_PlayPause_clicked();
+    }
+
+    if (player->mediaStatus() == QMediaPlayer::MediaStatus::LoadedMedia) {
+        qInfo() << "Loaded media";
+    }
+}
+
+void PlayerControlsWidget::playNext(QString filePath)
+{
+    setCurMusic(filePath);
+}
+
+void PlayerControlsWidget::playPrev(QString filePath)
+{
+    setCurMusic(filePath);
 }
 
 void PlayerControlsWidget::on_durationChanged(qint64 duration)
@@ -139,15 +142,14 @@ void PlayerControlsWidget::on_durationChanged(qint64 duration)
 void PlayerControlsWidget::on_positionChanged(qint64 position)
 {
     if (userIsSeeking) {
+        //TODO: make it so that the user can see the time update in real time?
         return;
     }
 
-    // Update seek bar without triggering signals
-    ui->seekBar->blockSignals(true);
+    blockSignals(true);
     ui->seekBar->setValue(position);
-    ui->seekBar->blockSignals(false);
+    blockSignals(false);
 
-    // Update time display
     QTime currentTime(0, 0);
     currentTime = currentTime.addMSecs(position);
     ui->curTime->setText(currentTime.toString("mm:ss"));
@@ -155,47 +157,30 @@ void PlayerControlsWidget::on_positionChanged(qint64 position)
 
 void PlayerControlsWidget::on_seekBar_sliderMoved(int position)
 {
-    // Update the slider value as user drags
     ui->seekBar->setValue(position);
-
-    // Optionally show the time at this position
-    QTime seekTime(0, 0);
-    seekTime = seekTime.addMSecs(position);
-    ui->curTime->setText(seekTime.toString("mm:ss"));
 }
+
+
+void PlayerControlsWidget::on_seekBar_sliderReleased()
+{
+    userIsSeeking = false;
+    player->setPosition(ui->seekBar->value());
+}
+
 
 void PlayerControlsWidget::on_seekBar_sliderPressed()
 {
     userIsSeeking = true;
 }
 
-void PlayerControlsWidget::on_seekBar_sliderReleased()
-{
-    userIsSeeking = false;
+void PlayerControlsWidget::updateInfoLabels() {
 
-    if (player) {
-        player->setPosition(ui->seekBar->value());
-    }
-}
-
-void PlayerControlsWidget::updateInfoLabels()
-{
-    if (!player) {
-        return;
-    }
+    //TODO: make this not dumb and add some sort of scrolling text instead of this.
+    qInfo() << player->metaData().value(QMediaMetaData::Title);
 
     QString trackTitle = player->metaData().stringValue(QMediaMetaData::Title);
     QString album = player->metaData().stringValue(QMediaMetaData::AlbumTitle);
 
-    // Fallback to "Unknown" if metadata is empty
-    if (trackTitle.isEmpty()) {
-        trackTitle = "Unknown Track";
-    }
-    if (album.isEmpty()) {
-        album = "Unknown Album";
-    }
-
-    // Elide text if it's too long
     QFontMetrics fmTitle(ui->trackTitle->font());
     QFontMetrics fmAlbum(ui->trackAlbum->font());
     QString elidedTitle = fmTitle.elidedText(trackTitle, Qt::ElideRight, ui->trackTitle->width());
@@ -205,15 +190,11 @@ void PlayerControlsWidget::updateInfoLabels()
     ui->trackAlbum->setText(elidedAlbum);
 }
 
-void PlayerControlsWidget::onPlaybackStateChanged(QMediaPlayer::PlaybackState state)
-{
-    qInfo() << "State changed to:" << state;
+void PlayerControlsWidget::playRemoteMusic(QString trackId) {
 
-    if (state == QMediaPlayer::PlayingState) {
-        ui->PlayPause->setText("Pause");
-        ui->PlayPause->setIcon(QIcon("../../icons/pause-circle.png"));
-    } else {
-        ui->PlayPause->setText("Play");
-        ui->PlayPause->setIcon(QIcon("../../icons/play-circle.png"));
-    }
+    QString streamUrl =
+        QString("http://192.168.4.165:4533/rest/stream.view?id=%1&u=admin&p=rat&v=1.16.1&c=QtPlayer").arg(trackId);
+
+    player->setSource(QUrl(streamUrl));
+    player->play();
 }

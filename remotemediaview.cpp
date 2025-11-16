@@ -1,36 +1,27 @@
 #include "remotemediaview.h"
 #include "ui_remotemediaview.h"
-#include "mainwindow.h"
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QHeaderView>
+#include <qjsonarray.h>
+#include <qjsondocument.h>
+#include <qjsonobject.h>
+#include <qnetworkreply.h>
+#include <qnetworkrequest.h>
+#include <qtreewidget.h>
+#include "playlist.h"
 
 RemoteMediaView::RemoteMediaView(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::RemoteMediaView)
-    , mainWindow(nullptr)
 {
     ui->setupUi(this);
-
-    // Setup table view behavior
     ui->mediaView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->mediaView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->mediaView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->mediaView->verticalHeader()->setVisible(false);
-
-    // Setup network manager
     networkManager = new QNetworkAccessManager(this);
 
     setupHeaderCols();
 
-    // Connections
-    connect(networkManager, &QNetworkAccessManager::finished,
-            this, &RemoteMediaView::onNetworkReply);
-    connect(ui->mediaView, &QTableWidget::cellDoubleClicked,
-            this, &RemoteMediaView::onItemDoubleClicked);
+    connect(networkManager, &QNetworkAccessManager::finished, this, &RemoteMediaView::onNetworkReply);
+    connect(ui->mediaView, &QTableWidget::cellDoubleClicked, this, &RemoteMediaView::onItemDoubleClicked);
 }
 
 RemoteMediaView::~RemoteMediaView()
@@ -38,140 +29,130 @@ RemoteMediaView::~RemoteMediaView()
     delete ui;
 }
 
-void RemoteMediaView::setMainWindow(MainWindow *mw)
-{
-    mainWindow = mw;
-}
-
-void RemoteMediaView::setupHeaderCols()
-{
+void RemoteMediaView::setupHeaderCols() {
     ui->mediaView->setColumnCount(COL_COUNT);
 
     QStringList headers;
-    headers << "Track" << "Title" << "Album" << "Duration" << "ID";
+    headers << "Track" << "Title" << "Album" << "Duration" << "trackId";
+
+    //ui->mediaView->resizeColumnsToContents();
+
     ui->mediaView->setHorizontalHeaderLabels(headers);
-
-    // Hide the ID column (we store it but don't display it)
+    ui->mediaView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->mediaView->hideColumn(COL_ID);
-
-    // Set resize modes
-    ui->mediaView->horizontalHeader()->setSectionResizeMode(COL_TRACK, QHeaderView::ResizeToContents);
-    ui->mediaView->horizontalHeader()->setSectionResizeMode(COL_NAME, QHeaderView::Stretch);
-    ui->mediaView->horizontalHeader()->setSectionResizeMode(COL_ALBUM, QHeaderView::Stretch);
-    ui->mediaView->horizontalHeader()->setSectionResizeMode(COL_DURATION, QHeaderView::ResizeToContents);
+    ui->mediaView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
-void RemoteMediaView::fetchAlbum(QString id)
-{
-    if (id.isEmpty()) {
-        qWarning() << "Attempted to fetch album with empty ID";
+void RemoteMediaView::fetchAlbum(QString id) {
+    QString url = ("http://192.168.4.165:4533/rest/getAlbum.view?id="+id+"&u=admin&p=rat&v=1.16.1&c=QBar&f=json");
+
+    qInfo() << id;
+
+    QNetworkRequest rq(url);
+    QNetworkReply *r = networkManager->get(rq);
+    r->setProperty("requestType", "albumList");
+}
+
+void RemoteMediaView::onNetworkReply(QNetworkReply *r) {
+    if (r->error() != QNetworkReply::NoError) {
+        qInfo() << "Error:" << r->errorString();
+        r->deleteLater();
         return;
     }
 
-    // Build URL - credentials should come from MainWindow
-    QString url = QString("http://192.168.4.165:4533/rest/getAlbum.view?"
-                          "id=%1&u=admin&p=rat&v=1.16.1&c=QBar&f=json")
-                      .arg(id);
+    QString reqType = r->property("requestType").toString();
 
-    QNetworkRequest request(url);
-    QNetworkReply *reply = networkManager->get(request);
-    reply->setProperty("requestType", "albumList");
-
-    qInfo() << "Fetching album:" << id;
+    if (reqType == "albumList") {
+        qInfo() << "album list requested";
+        handleAlbumRequest(r);
+    } else if (reqType == "songStream") {
+        qInfo() << "play requested";
+    }
 }
 
-void RemoteMediaView::onNetworkReply(QNetworkReply *reply)
-{
-    if (reply->error() != QNetworkReply::NoError) {
-        qWarning() << "Network error:" << reply->errorString();
-        reply->deleteLater();
-        return;
-    }
-
-    QString requestType = reply->property("requestType").toString();
-
-    if (requestType == "albumList") {
-        handleAlbumRequest(reply);
-    }
-
-    reply->deleteLater();
-}
-
-void RemoteMediaView::handleAlbumRequest(QNetworkReply *reply)
-{
-    QByteArray response = reply->readAll();
+void RemoteMediaView::handleAlbumRequest(QNetworkReply *r) {
+    QByteArray response = r->readAll();
     QJsonDocument doc = QJsonDocument::fromJson(response);
     QJsonObject obj = doc.object();
 
-    QJsonObject subsonicResponse = obj["subsonic-response"].toObject();
-    QJsonObject album = subsonicResponse["album"].toObject();
+    QJsonObject album = obj["subsonic-response"].toObject()["album"].toObject();
+
     QJsonArray songs = album["song"].toArray();
 
-    // Clear previous album
-    currentAlbumTracks.clear();
-    ui->mediaView->setRowCount(0);
     ui->mediaView->setRowCount(songs.count());
+    ui->mediaView->clearContents();
 
-    // Build track list and populate table
+    qInfo() << songs;
+
     for (int i = 0; i < songs.count(); i++) {
+        auto *trackItem = new QTableWidgetItem();
+
         QJsonObject song = songs[i].toObject();
 
-        // Create Track struct
-        Track track;
-        track.id = song["id"].toString();
-        track.title = song["title"].toString();
-        track.artist = song["artist"].toString();
-        track.album = song["album"].toString();
-        track.trackNumber = song["track"].toInt();
-        track.duration = song["duration"].toInt();
-        track.isRemote = true;
-        track.filePath = "";  // Not needed for remote tracks
+        QString trackTitle = song["title"].toString();
+        int trackNumber = song["track"].toInt();
+        QString albumName = song["album"].toString();
+        int durationSeconds = song["duration"].toInt();
+        QString trackId = song["id"].toString();
 
-        currentAlbumTracks.append(track);
+        // Make the track
+        Track t;
+        t.id = trackId;
+        t.title = trackTitle;
+        t.artist = song["artist"].toString();
+        t.trackNumber = trackNumber;
+        t.album = albumName;
+        t.duration = durationSeconds;
+        t.beenPlayed = false;
+        // TODO: change this to the full url when
+        // url management is implemented
+        t.filePath = "REMOTE_URL";
 
-        // Format duration as MM:SS
-        int totalSeconds = track.duration;
-        int minutes = totalSeconds / 60;
-        int seconds = totalSeconds % 60;
-        QString durationStr = QString("%1:%2")
-                                  .arg(minutes, 2, 10, QChar('0'))
-                                  .arg(seconds, 2, 10, QChar('0'));
+        currentAlbumTracks.append(t);
 
-        // Populate table row
-        ui->mediaView->setItem(i, COL_TRACK,
-                               new QTableWidgetItem(QString::number(track.trackNumber)));
+
+        int secs = durationSeconds % 60;
+        int mins = durationSeconds / 60;
+
+        QString duration = QString("%1:%2").arg(mins, 2, 10, QChar('0')).arg(secs, 2, 10, QChar('0'));
+
+
+        //qInfo() << trackTitle + " - " + QString::number(trackNumber) + " -- " + albumName +" : " + QString::number(durationSeconds);
+        trackItem->setData(Qt::DisplayRole, trackNumber);
+        trackItem->setData(Qt::UserRole, trackNumber);
+
+        ui->mediaView->setItem(i, COL_TRACK, trackItem);
         ui->mediaView->setItem(i, COL_NAME,
-                               new QTableWidgetItem(track.title));
+                               new QTableWidgetItem(trackTitle));
         ui->mediaView->setItem(i, COL_ALBUM,
-                               new QTableWidgetItem(track.album));
+                               new QTableWidgetItem(albumName));
         ui->mediaView->setItem(i, COL_DURATION,
-                               new QTableWidgetItem(durationStr));
+                               new QTableWidgetItem(duration));
         ui->mediaView->setItem(i, COL_ID,
-                               new QTableWidgetItem(track.id));
+                      new QTableWidgetItem(trackId));
+
     }
 
-    qInfo() << "Loaded" << currentAlbumTracks.count() << "tracks";
+    for (Track t : currentAlbumTracks) {
+        qInfo() << t.title + " - " + QString::number(t.trackNumber) + " -- " + t.album +" : " + QString::number(t.duration);
+    }
+
 }
 
-void RemoteMediaView::onItemDoubleClicked(int row, int col)
-{
+void RemoteMediaView::onItemDoubleClicked(int row, int col) {
     Q_UNUSED(col);
 
-    if (!mainWindow) {
-        qWarning() << "MainWindow not set!";
-        return;
-    }
+    m_curIndex = row;
 
-    if (currentAlbumTracks.isEmpty()) {
-        qWarning() << "No tracks loaded";
-        return;
-    }
+    QTableWidgetItem *trackItem = ui->mediaView->item(row, COL_ID);
 
-    if (row < 0 || row >= currentAlbumTracks.count()) {
-        qWarning() << "Invalid row:" << row;
-        return;
-    }
+    qInfo() << trackItem->text();
 
-    // Tell MainWindow to play this album starting at the selected track
-    mainWindow->playNewPlaylist(currentAlbumTracks, row);
+    QString trackId = trackItem->text();
+
+    emit songSelected(trackId);
+}
+
+void RemoteMediaView::setMainWindow(MainWindow *mw) {
+    mainWindow = mw;
 }
