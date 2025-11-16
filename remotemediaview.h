@@ -3,9 +3,10 @@
 
 #include <QWidget>
 #include <QNetworkAccessManager>
-#include <qtreewidget.h>
-#include "mainwindow.h"
 #include "playlist.h"
+
+// Forward declaration to avoid circular dependency
+class MainWindow;
 
 namespace Ui {
 class RemoteMediaView;
@@ -18,20 +19,18 @@ class RemoteMediaView : public QWidget
 public:
     explicit RemoteMediaView(QWidget *parent = nullptr);
     ~RemoteMediaView();
-    void fetchAlbum(QString id);
+
     void setMainWindow(MainWindow *mw);
+    void fetchAlbum(QString id);
+
+private slots:
+    void onNetworkReply(QNetworkReply *r);
+    void onItemDoubleClicked(int row, int col);
 
 private:
     Ui::RemoteMediaView *ui;
     QNetworkAccessManager *networkManager;
     MainWindow *mainWindow;
-    void setupHeaderCols();
-    void displayAlbum(QJsonObject response);
-    void onNetworkReply(QNetworkReply *r);
-    void handleAlbumRequest(QNetworkReply *r);
-    void onItemDoubleClicked(int col, int row);
-    int m_curIndex;
-
     QList<Track> currentAlbumTracks;
 
     enum ColIndex {
@@ -40,11 +39,11 @@ private:
         COL_ALBUM,
         COL_DURATION,
         COL_ID,
-        COL_COUNT,
+        COL_COUNT
     };
-signals:
-    void songSelected(QString trackId);
-    void playAlbum(const QList<Track> &tracks, int startIndex);
+
+    void setupHeaderCols();
+    void handleAlbumRequest(QNetworkReply *r);
 };
 
 #endif // REMOTEMEDIAVIEW_H

@@ -2,8 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "playlist.h"
 #include <QMediaPlayer>
+#include "playlist.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -18,26 +18,33 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    QString username;
-    QString password;
-    QString serverUrl;
+
+    // Public method for views to create and play a new playlist
     void playNewPlaylist(const QList<Track> &tracks, int startIndex = 0);
-    void playTrack(const Track &track);
+
+private slots:
+    // Menu actions
+    void changeRoot();
+    void actionAbout();
+    void actionExit();
+    void remoteModeToggle();
+
+    // Playlist navigation (called by PlayerControls)
     void onNextRequested();
     void onPreviousRequested();
     void onMediaStatusChanged(QMediaPlayer::MediaStatus status);
 
-private slots:
-    void changeRoot();
-    void actionAbout();
-    void actionExit();
-    void playNextTrack();
-    void playPrevTrack();
-    void loopTracks();
-    void remoteModeToggle();
-
 private:
     Ui::MainWindow *ui;
     Playlist *currentPlaylist;
+
+    // Server credentials
+    QString username;
+    QString password;
+    QString serverUrl;
+
+    // Helper methods
+    void playTrack(const Track &track);
 };
+
 #endif // MAINWINDOW_H

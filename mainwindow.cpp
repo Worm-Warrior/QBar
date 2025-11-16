@@ -1,9 +1,8 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include <QtMultimedia/QtMultimedia>
+#include <QtMultimedia/QMediaPlayer>
 #include <QtMultimedia/QAudioOutput>
 #include <QMessageBox>
-#include <qpushbutton.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -11,12 +10,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Menu actions
-    connect(ui->chooseRoot, &QAction::triggered, this, &MainWindow::changeRoot);
-    connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::actionAbout);
-    connect(ui->actionExit, &QAction::triggered, this, &MainWindow::actionExit);
-    connect(ui->actionRemoteModeSwitch, &QAction::triggered, this, &MainWindow::remoteModeToggle);
-    connect(ui->actionRemoteModeSwitch, &QAction::toggled, this, &MainWindow::remoteModeToggle);
+    // Hard code credentials for now
+    username = "admin";
+    password = "rat";
+    serverUrl = "http://192.168.4.165:4533";
 
     // Setup player
     QMediaPlayer *player = new QMediaPlayer(this);
@@ -28,33 +25,33 @@ MainWindow::MainWindow(QWidget *parent)
     // Create global playlist
     currentPlaylist = new Playlist(this);
 
-    // Hard code credentials for now
-    username = "admin";
-    password = "rat";
-
-    // Setup stacks
+    // Setup stacks (start in local mode)
     ui->browserStack->setCurrentIndex(0);
     ui->viewStack->setCurrentIndex(0);
 
-    // Give views access to MainWindow
+    // Give views access to MainWindow so they can call playNewPlaylist()
     ui->RemoteView->setMainWindow(this);
-    ui->MainView->setMainWindow(this);  // You'll need to add this method to MediaViewWidget
+    ui->MainView->setMainWindow(this);
 
-    // LOCAL mode connections
+    // === MENU ACTIONS ===
+    connect(ui->chooseRoot, &QAction::triggered,
+            this, &MainWindow::changeRoot);
+    connect(ui->actionAbout, &QAction::triggered,
+            this, &MainWindow::actionAbout);
+    connect(ui->actionExit, &QAction::triggered,
+            this, &MainWindow::actionExit);
+    connect(ui->actionRemoteModeSwitch, &QAction::triggered,
+            this, &MainWindow::remoteModeToggle);
+
+    // === LOCAL MODE ===
     connect(ui->FileBrowser, &FileBrowserWidget::folderSelected,
             ui->MainView, &MediaViewWidget::displayFolder);
-    // Remove old direct connection to PlayerControls:
-    // connect(ui->MainView, &MediaViewWidget::fileDoubleClicked,
-    //         ui->PlayerControls, &PlayerControlsWidget::setCurMusic);
 
-    // REMOTE mode connections
+    // === REMOTE MODE ===
     connect(ui->RemoteBrowser, &RemoteFileBrowser::albumSelected,
             ui->RemoteView, &RemoteMediaView::fetchAlbum);
-    // Remove old direct connection:
-    // connect(ui->RemoteView, &RemoteMediaView::songSelected,
-    //         ui->PlayerControls, &PlayerControlsWidget::playRemoteMusic);
 
-    // PLAYER CONTROLS connections - route through MainWindow
+    // === PLAYER CONTROLS (routed through MainWindow/Playlist) ===
     connect(ui->PlayerControls, &PlayerControlsWidget::nextClicked,
             this, &MainWindow::onNextRequested);
     connect(ui->PlayerControls, &PlayerControlsWidget::prevClicked,
@@ -62,15 +59,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->PlayerControls->player, &QMediaPlayer::mediaStatusChanged,
             this, &MainWindow::onMediaStatusChanged);
 
-    // UI update connections (these can stay direct)
+    // === UI UPDATES (direct to PlayerControls) ===
     connect(ui->PlayerControls->player, &QMediaPlayer::positionChanged,
             ui->PlayerControls, &PlayerControlsWidget::on_positionChanged);
     connect(ui->PlayerControls->player, &QMediaPlayer::durationChanged,
             ui->PlayerControls, &PlayerControlsWidget::on_durationChanged);
     connect(ui->PlayerControls->player, &QMediaPlayer::metaDataChanged,
             ui->PlayerControls, &PlayerControlsWidget::updateInfoLabels);
-
-    qInfo() << "Current index:" << ui->browserStack->currentIndex();
 }
 
 MainWindow::~MainWindow()
@@ -78,125 +73,46 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::changeRoot() {
-    ui->FileBrowser->changeRoot();
-}
-
-void MainWindow::actionAbout() {
-    QMessageBox msgBox;
-    msgBox.setText("QBar v0.1\n"
-                   "Authored By Harrison Voss\n"
-                   "Heavily inspired by FooBar200");
-    msgBox.setIcon(QMessageBox::Information);
-    msgBox.exec();
-}
-
-
-void MainWindow::actionExit() {
-    QMessageBox msgBox;
-    msgBox.setText("Do you want to exit?");
-    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-    msgBox.setDefaultButton(QMessageBox::Ok);
-    int ret = msgBox.exec();
-
-    if (ret == QMessageBox::Ok) {
-        exit(0);
-    } else {
-        return;
-    }
-}
-
-void MainWindow::playNextTrack()
+void MainWindow::playNewPlaylist(const QList<Track> &tracks, int startIndex)
 {
-    if (ui->PlayerControls->shouldRepeat) {
-        ui->PlayerControls->player->setPosition(0);
-        return;
-    }
-    QString next = ui->MainView->getNextFile();
-    if (!next.isEmpty()) {
-        ui->PlayerControls->setCurMusic(next);
-    }
-
-}
-
-void MainWindow::playPrevTrack()
-{
-    if (ui->PlayerControls->shouldRepeat) {
-        ui->PlayerControls->player->setPosition(0);
+    if (tracks.isEmpty()) {
+        qWarning() << "Attempted to play empty playlist";
         return;
     }
 
-    QString prev = ui->MainView->getPrevFile();
-    if (!prev.isEmpty()) {
-        ui->PlayerControls->setCurMusic(prev);
-    }
-}
-
-void MainWindow::loopTracks()
-{
-    if (ui->PlayerControls->player->mediaStatus() == QMediaPlayer::EndOfMedia)
-    {
-        playNextTrack();
-    }
-}
-
-void MainWindow::remoteModeToggle() {
-
-    // This will need to be more robust later, but for now this will do.
-    if (username.isEmpty() || password.isEmpty()) {
-        QMessageBox msgBox;
-        msgBox.setText("Your username or password is empty!");
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.exec();
-
-        return;
-    }
-
-    // This should never happen, but just in case!
-    Q_ASSERT(ui->viewStack->currentIndex()
-             == ui->browserStack->currentIndex());
-    // At this point they are both the same so it does not matter.
-    int currentMode = ui->browserStack->currentIndex();
-
-    int newMode = (currentMode == 0) ? 1 : 0;
-
-    ui->browserStack->setCurrentIndex(newMode);
-    ui->viewStack->setCurrentIndex(newMode);
-
-    ui->actionRemoteModeSwitch->setText(newMode == 0 ? "Remote Mode" : "Local Mode");
-}
-
-void MainWindow::playNewPlaylist(const QList<Track> &tracks, int startIndex) {
+    // Replace current playlist
     currentPlaylist->clear();
     currentPlaylist->addTracks(tracks);
     currentPlaylist->setCurrentIndex(startIndex);
 
+    // Start playing first track
     Track track = currentPlaylist->currentTrack();
     playTrack(track);
 }
 
-void MainWindow::playTrack(const Track &track) {
-    if (track.id.isEmpty() && track.filePath.isEmpty()) {
-        return;
-    }
-
+void MainWindow::playTrack(const Track &track)
+{
     if (track.isRemote) {
-        QString streamUrl = QString("http://192.168.4.165:4533/rest/stream.view?"
-                                    "id=%1&u=%2&p=%3&v=1.16.1&c=QBar")
+        // Build streaming URL
+        QString streamUrl = QString("%1/rest/stream.view?id=%2&u=%3&p=%4&v=1.16.1&c=QBar")
+                                .arg(serverUrl)
                                 .arg(track.id)
                                 .arg(username)
                                 .arg(password);
         ui->PlayerControls->player->setSource(QUrl(streamUrl));
     } else {
+        // Local file
         ui->PlayerControls->player->setSource(QUrl::fromLocalFile(track.filePath));
     }
 
-    // Update player controls UI
+    // Update UI with track info (you may need to add this method to PlayerControlsWidget)
     // ui->PlayerControls->updateTrackInfo(track);
+
     ui->PlayerControls->player->play();
 }
 
-void MainWindow::onNextRequested() {
+void MainWindow::onNextRequested()
+{
     if (currentPlaylist->hasNext()) {
         Track nextTrack = currentPlaylist->nextTrack();
         playTrack(nextTrack);
@@ -205,16 +121,70 @@ void MainWindow::onNextRequested() {
     }
 }
 
-void MainWindow::onPreviousRequested() {
+void MainWindow::onPreviousRequested()
+{
     if (currentPlaylist->hasPrev()) {
         Track prevTrack = currentPlaylist->prevTrack();
         playTrack(prevTrack);
     }
 }
 
-void MainWindow::onMediaStatusChanged(QMediaPlayer::MediaStatus status) {
-    // When song ends, play next automatically
+void MainWindow::onMediaStatusChanged(QMediaPlayer::MediaStatus status)
+{
+    // When song ends, automatically play next track
     if (status == QMediaPlayer::EndOfMedia) {
         onNextRequested();
     }
+}
+
+void MainWindow::changeRoot()
+{
+    ui->FileBrowser->changeRoot();
+}
+
+void MainWindow::actionAbout()
+{
+    QMessageBox msgBox;
+    msgBox.setText("QBar v0.1\n"
+                   "Authored By Harrison Voss\n"
+                   "Heavily inspired by FooBar2000");
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.exec();
+}
+
+void MainWindow::actionExit()
+{
+    QMessageBox msgBox;
+    msgBox.setText("Do you want to exit?");
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    int ret = msgBox.exec();
+
+    if (ret == QMessageBox::Ok) {
+        QApplication::quit();
+    }
+}
+
+void MainWindow::remoteModeToggle()
+{
+    // Validate credentials before switching to remote mode
+    if (username.isEmpty() || password.isEmpty()) {
+        QMessageBox msgBox;
+        msgBox.setText("Username or password is empty!");
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
+
+    // Ensure stacks are synchronized
+    Q_ASSERT(ui->viewStack->currentIndex() == ui->browserStack->currentIndex());
+
+    int currentMode = ui->browserStack->currentIndex();
+    int newMode = (currentMode == 0) ? 1 : 0;
+
+    ui->browserStack->setCurrentIndex(newMode);
+    ui->viewStack->setCurrentIndex(newMode);
+
+    // Update menu text
+    ui->actionRemoteModeSwitch->setText(newMode == 0 ? "Remote Mode" : "Local Mode");
 }

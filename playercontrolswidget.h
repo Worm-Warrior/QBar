@@ -2,7 +2,7 @@
 #define PLAYERCONTROLSWIDGET_H
 
 #include <QWidget>
-#include <QtMultimedia/QtMultimedia>
+#include <QMediaPlayer>
 
 namespace Ui {
 class PlayerControlsWidget;
@@ -15,16 +15,20 @@ class PlayerControlsWidget : public QWidget
 public:
     explicit PlayerControlsWidget(QWidget *parent = nullptr);
     ~PlayerControlsWidget();
+
     void setPlayer(QMediaPlayer *p);
-    void setCurMusic(QString filePath);
-    void playNext(QString filePath);
-    void playPrev(QString filePath);
-    QMediaPlayer *player = nullptr;
-    void on_durationChanged(qint64 position);
-    void on_positionChanged(qint64 duration);
+
+    // Public slots for MainWindow to update UI
+    void on_positionChanged(qint64 position);
+    void on_durationChanged(qint64 duration);
     void updateInfoLabels();
-    bool shouldRepeat;
-    void playRemoteMusic(QString trackId);
+
+    // Public access to player (MainWindow needs this)
+    QMediaPlayer *player;
+
+signals:
+    void nextClicked();
+    void prevClicked();
 
 private slots:
     void on_PlayPause_clicked();
@@ -33,17 +37,11 @@ private slots:
     void on_seekBar_sliderMoved(int position);
     void on_seekBar_sliderReleased();
     void on_seekBar_sliderPressed();
-
-signals:
-    void nextClicked();
-    void prevClicked();
-    void playClicked();
-    void pauseClicked();
+    void onPlaybackStateChanged(QMediaPlayer::PlaybackState state);
 
 private:
     Ui::PlayerControlsWidget *ui;
     bool userIsSeeking;
-
 };
 
 #endif // PLAYERCONTROLSWIDGET_H
