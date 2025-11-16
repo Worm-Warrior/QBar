@@ -2,9 +2,10 @@
 #define MEDIAVIEWWIDGET_H
 
 #include <QWidget>
-#include <qboxlayout.h>
-#include <qtablewidget.h>
-#include "mainwindow.h"
+#include "playlist.h"
+
+// Forward declaration
+class MainWindow;
 
 struct MediaFile {
     QString filePath;
@@ -15,6 +16,8 @@ struct MediaFile {
     QString format;
     int trackNumber;
     qint64 fileSize;
+
+    MediaFile() : trackNumber(0), fileSize(0) {}
 };
 
 namespace Ui {
@@ -28,20 +31,13 @@ class MediaViewWidget : public QWidget
 public:
     explicit MediaViewWidget(QWidget *parent = nullptr);
     ~MediaViewWidget();
-    void displayFolder(const QString &folderPath);
-    void addMediaFile(const MediaFile &mediaFile);
-    void clearView();
+
     void setMainWindow(MainWindow *mw);
-    //TODO: IMPLEMENT
-    QString getCurrentFile() const;
-    //TODO: IMPLEMENT
-    QString getNextFile();
-    //TODO: IMPLEMENT
-    QString getPrevFile();
-    //TODO: IMPLEMENT
-    void setCurrentFile(const QString &filePath);
-    int getCurrentIndex() const {return m_curIndex;}
-    QStringList getSelectedFiles() const;
+    void displayFolder(const QString &folderPath);
+
+signals:
+    void selectionChanged(const QStringList &selectedFiles);
+
 private slots:
     void onItemDoubleClicked(int row, int column);
     void onSelectionChanged();
@@ -49,10 +45,7 @@ private slots:
 private:
     Ui::MediaViewWidget *ui;
     MainWindow *mainWindow;
-    void setupTableCols();
-    MediaFile parseMediaFile(const QString &filePath);
-    QStringList getSupportedAudioFiles(const QString &folderPath);
-    int m_curIndex;
+    QList<Track> currentFolderTracks;
 
     enum ColIndex {
         COL_TRACK = 0,
@@ -65,11 +58,12 @@ private:
         COL_COUNT
     };
 
-signals:
-    void fileDoubleClicked(const QString &filePath);
-    void selectionChanged(const QStringList &selectedFiles);
-    void newPlaylist(const QStringList &files);
-    void endOfPlaylist();
+    void setupTableCols();
+    void clearView();
+    MediaFile parseMediaFile(const QString &filePath);
+    QStringList getSupportedAudioFiles(const QString &folderPath);
+    QStringList getSelectedFiles() const;
+    Track mediaFileToTrack(const MediaFile &mediaFile);
 };
 
 #endif // MEDIAVIEWWIDGET_H
