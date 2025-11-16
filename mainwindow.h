@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "playlist.h"
+#include <QMediaPlayer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -19,6 +21,11 @@ public:
     QString username;
     QString password;
     QString serverUrl;
+    void playNewPlaylist(const QList<Track> &tracks, int startIndex = 0);
+    void playTrack(const Track &track);
+    void onNextRequested();
+    void onPreviousRequested();
+    void onMediaStatusChanged(QMediaPlayer::MediaStatus status);
 
 private slots:
     void changeRoot();
@@ -31,5 +38,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    Playlist *currentPlaylist;
 };
 #endif // MAINWINDOW_H

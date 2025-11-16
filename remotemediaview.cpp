@@ -6,6 +6,7 @@
 #include <qnetworkreply.h>
 #include <qnetworkrequest.h>
 #include <qtreewidget.h>
+#include "playlist.h"
 
 RemoteMediaView::RemoteMediaView(QWidget *parent)
     : QWidget(parent)
@@ -94,13 +95,29 @@ void RemoteMediaView::handleAlbumRequest(QNetworkReply *r) {
         int durationSeconds = song["duration"].toInt();
         QString trackId = song["id"].toString();
 
+        // Make the track
+        Track t;
+        t.id = trackId;
+        t.title = trackTitle;
+        t.artist = song["artist"].toString();
+        t.trackNumber = trackNumber;
+        t.album = albumName;
+        t.duration = durationSeconds;
+        t.beenPlayed = false;
+        // TODO: change this to the full url when
+        // url management is implemented
+        t.filePath = "REMOTE_URL";
+
+        currentAlbumTracks.append(t);
+
+
         int secs = durationSeconds % 60;
         int mins = durationSeconds / 60;
 
         QString duration = QString("%1:%2").arg(mins, 2, 10, QChar('0')).arg(secs, 2, 10, QChar('0'));
 
 
-        qInfo() << trackTitle + " - " + QString::number(trackNumber) + " -- " + albumName +" : " + QString::number(durationSeconds);
+        //qInfo() << trackTitle + " - " + QString::number(trackNumber) + " -- " + albumName +" : " + QString::number(durationSeconds);
         trackItem->setData(Qt::DisplayRole, trackNumber);
         trackItem->setData(Qt::UserRole, trackNumber);
 
@@ -114,6 +131,10 @@ void RemoteMediaView::handleAlbumRequest(QNetworkReply *r) {
         ui->mediaView->setItem(i, COL_ID,
                       new QTableWidgetItem(trackId));
 
+    }
+
+    for (Track t : currentAlbumTracks) {
+        qInfo() << t.title + " - " + QString::number(t.trackNumber) + " -- " + t.album +" : " + QString::number(t.duration);
     }
 
 }
@@ -130,4 +151,8 @@ void RemoteMediaView::onItemDoubleClicked(int row, int col) {
     QString trackId = trackItem->text();
 
     emit songSelected(trackId);
+}
+
+void RemoteMediaView::setMainWindow(MainWindow *mw) {
+    mainWindow = mw;
 }

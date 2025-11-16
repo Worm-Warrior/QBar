@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <qboxlayout.h>
 #include <qtablewidget.h>
+#include "mainwindow.h"
 
 struct MediaFile {
     QString filePath;
@@ -26,29 +27,20 @@ class MediaViewWidget : public QWidget
 
 public:
     explicit MediaViewWidget(QWidget *parent = nullptr);
-
     ~MediaViewWidget();
-
     void displayFolder(const QString &folderPath);
-
     void addMediaFile(const MediaFile &mediaFile);
-
     void clearView();
-
+    void setMainWindow(MainWindow *mw);
     //TODO: IMPLEMENT
     QString getCurrentFile() const;
-
     //TODO: IMPLEMENT
     QString getNextFile();
-
     //TODO: IMPLEMENT
     QString getPrevFile();
-
     //TODO: IMPLEMENT
     void setCurrentFile(const QString &filePath);
-
     int getCurrentIndex() const {return m_curIndex;}
-
     QStringList getSelectedFiles() const;
 private slots:
     void onItemDoubleClicked(int row, int column);
@@ -56,6 +48,7 @@ private slots:
 
 private:
     Ui::MediaViewWidget *ui;
+    MainWindow *mainWindow;
     void setupTableCols();
     MediaFile parseMediaFile(const QString &filePath);
     QStringList getSupportedAudioFiles(const QString &folderPath);

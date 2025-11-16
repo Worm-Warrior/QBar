@@ -258,3 +258,7 @@ void MediaViewWidget::onItemDoubleClicked(int row, int col) {
 void MediaViewWidget::onSelectionChanged() {
     emit selectionChanged(getSelectedFiles());
 }
+
+void MediaViewWidget::setMainWindow(MainWindow *mw) {
+    mainWindow = mw;
+}

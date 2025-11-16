@@ -10,14 +10,15 @@ struct Track {
     QString album;
     int trackNumber;
     int duration;
+
     // NOTE:
     // I am thinking we just use this as either a
     // URL or file system path, depending on isRemote
-
     QString filePath;
     bool isRemote;
-
-    Track() : trackNumber(0), duration(0), isRemote(0) {}
+    // Might need this for the more complex managing of playlist / shuffle.
+    bool beenPlayed;
+    Track() : trackNumber(0), duration(0), isRemote(0), beenPlayed(false) {}
 };
 
 enum repeatModes {
@@ -26,11 +27,11 @@ enum repeatModes {
     REPEAT_SINGLE = 2,
 };
 
-class playlist : public QObject
+class Playlist : public QObject
 {
     Q_OBJECT
 public:
-    explicit playlist(QObject *parent = nullptr);
+    explicit Playlist(QObject *parent = nullptr);
 
     // Adding
     void addTrack(const Track &track);
@@ -39,8 +40,8 @@ public:
 
     // Nav
     Track currentTrack() const;
-    Track nextTrack() const;
-    Track prevTrack() const;
+    Track nextTrack();
+    Track prevTrack();
     bool hasNext() const;
     bool hasPrev() const;
 
