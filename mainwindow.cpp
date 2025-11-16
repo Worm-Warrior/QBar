@@ -19,11 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
     QMediaPlayer *player = new QMediaPlayer(this);
     QAudioOutput *audioOut = new QAudioOutput(this);
     player->setAudioOutput(audioOut);
-    audioOut->setVolume(0.5);
-    ui->PlayerControls->setPlayer(player);
-
-    // Create global playlist
-    currentPlaylist = new Playlist(this);
 
     // Setup stacks (start in local mode)
     ui->browserStack->setCurrentIndex(0);
