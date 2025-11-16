@@ -20,6 +20,8 @@ FileBrowserWidget::~FileBrowserWidget()
     delete ui;
 }
 
+//TODO: It does not show any of the media files when you are in the root that only has playable files.
+//		i.e: In the album folder without any sub-folders
 void FileBrowserWidget::changeRoot()
 {
     if (!model) {return;}
