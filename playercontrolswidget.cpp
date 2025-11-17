@@ -241,3 +241,17 @@ void PlayerControlsWidget::on_Repeat_clicked()
     emit repeatChanged(repeatMode);
 }
 
+
+void PlayerControlsWidget::on_Shuffle_clicked()
+{
+    shuffleOn = !shuffleOn;
+
+    if (shuffleOn) {
+        ui->Shuffle->setText("Shuffle: On");
+    } else {
+        ui->Shuffle->setText("Shuffle: Off");
+    }
+
+    emit shuffleChanged(shuffleOn);
+}
+

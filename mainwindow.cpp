@@ -72,6 +72,13 @@ MainWindow::MainWindow(QWidget *parent)
         currentPlaylist->setRepeat(mode);
         qInfo() << mode;
     });
+
+    connect(ui->PlayerControls, &PlayerControlsWidget::shuffleChanged,
+            this, [this](bool mode){
+        currentPlaylist->setShuffle(mode);
+        qInfo() << mode;
+    });
+
 }
 
 MainWindow::~MainWindow()

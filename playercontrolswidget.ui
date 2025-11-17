@@ -13,9 +13,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_4">
+  <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,6,1,0,1,4">
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,6,1,0,0,1,4">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
@@ -181,7 +181,14 @@
      <item>
       <widget class="QPushButton" name="Repeat">
        <property name="text">
-        <string>Repeat Off</string>
+        <string>Repeat: Off</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="Shuffle">
+       <property name="text">
+        <string>Shuffle: Off</string>
        </property>
       </widget>
      </item>

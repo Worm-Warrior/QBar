@@ -4,6 +4,7 @@
 Playlist::Playlist(QObject *parent)
     : QObject(parent),
     curIndex(-1),
+    shufflePos(-1),
     shuffle(false),
     repeat(REPEAT_OFF)
 {
@@ -43,25 +44,31 @@ Track Playlist::nextTrack() {
     }
 
     if (shuffle) {
-        int curShuffle = shuffleOrder.indexOf(curIndex);
-        if (repeat != REPEAT_SINGLE && curShuffle < shuffleOrder.count()-1) {
-            curIndex = shuffleOrder[curShuffle+1];
-        } else if (repeat == REPEAT_SINGLE) {
+        if (repeat == REPEAT_SINGLE) {
             return currentTrack();
-        } else if (repeat == REPEAT_PLAYLIST) {
-            curIndex = shuffleOrder[0];
-        } else {
-            return Track();
         }
+
+        shufflePos++;
+
+        if (shufflePos >= shuffleOrder.count()) {
+            if (repeat == REPEAT_PLAYLIST) {
+                shufflePos = 0;
+            } else {
+                return Track();  // End of playlist
+            }
+        }
+
+        curIndex = shuffleOrder[shufflePos];
     } else {
-        if (repeat != REPEAT_SINGLE && curIndex < trackList.count()-1) {
+        // Normal logic
+        if (curIndex < trackList.count() - 1) {
             curIndex++;
         } else if (repeat == REPEAT_SINGLE) {
-            // if we are repeating a single song we just get current one back.
             return currentTrack();
         } else if (repeat == REPEAT_PLAYLIST) {
-            // reset the playlist.
             curIndex = 0;
+        } else {
+            return Track();
         }
     }
 
@@ -71,27 +78,34 @@ Track Playlist::nextTrack() {
 }
 
 Track Playlist::prevTrack() {
-    if (trackList.isEmpty()) {return Track();}
+    if (trackList.isEmpty()) {
+        return Track();
+    }
 
     if (shuffle) {
-        int curShuffle = shuffleOrder.indexOf(curIndex);
-
-        if (repeat != REPEAT_SINGLE && curShuffle > 0) {
-            curIndex = shuffleOrder[curShuffle-1];
-        } else if (repeat == REPEAT_SINGLE) {
+        if (repeat == REPEAT_SINGLE) {
             return currentTrack();
-        } else if (repeat == REPEAT_PLAYLIST) {
-            curIndex = shuffleOrder.last();
-        } else {
-            return Track();
         }
+
+        shufflePos--;
+
+        if (shufflePos< 0) {
+            if (repeat == REPEAT_PLAYLIST) {
+                shufflePos= shuffleOrder.count() - 1;
+            } else {
+                return Track();
+            }
+        }
+
+        curIndex = shuffleOrder[shufflePos];
     } else {
-        if (repeat != REPEAT_SINGLE && curIndex > 0) {
+        // Normal logic
+        if (curIndex > 0) {
             curIndex--;
         } else if (repeat == REPEAT_SINGLE) {
             return currentTrack();
         } else if (repeat == REPEAT_PLAYLIST) {
-            curIndex = trackList.count()-1;
+            curIndex = trackList.count() - 1;
         } else {
             return Track();
         }
@@ -105,22 +119,39 @@ Track Playlist::prevTrack() {
 bool Playlist::hasNext() const {
     if (repeat == REPEAT_SINGLE || repeat == REPEAT_PLAYLIST) {
         return true;
+    }
+
+    if (shuffle) {
+        return shufflePos< shuffleOrder.count() - 1;
     } else {
-        return curIndex < trackList.count()-1;
+        return curIndex < trackList.count() - 1;
     }
 }
 
 bool Playlist::hasPrev() const {
     if (repeat == REPEAT_SINGLE || repeat == REPEAT_PLAYLIST) {
         return true;
+    }
+
+    if (shuffle) {
+        return shufflePos> 0;
     } else {
         return curIndex > 0;
     }
 }
 
 void Playlist::setCurrentIndex(int index) {
-    if (index >= 0 && index <= trackList.count()-1) {
+    if (index >= 0 && index < trackList.count()) {
         curIndex = index;
+
+        if (shuffle && !shuffleOrder.isEmpty()) {
+            // Find this track's position in shuffle order
+            shufflePos= shuffleOrder.indexOf(index);
+            if (shufflePos== -1) {
+                shufflePos= 0;
+            }
+        }
+
         emit trackChanged(currentTrack());
     }
 }

@@ -61,6 +61,7 @@ public:
 private:
     QList<Track> trackList;
     int curIndex;
+    int shufflePos;
     bool shuffle;
     int repeat;
     QList<int> shuffleOrder;
