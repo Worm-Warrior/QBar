@@ -32,6 +32,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         remotefilebrowser.h remotefilebrowser.cpp remotefilebrowser.ui
         remotemediaview.h remotemediaview.cpp remotemediaview.ui
         playlist.h playlist.cpp
+        icons.qrc
 
     )
 else()

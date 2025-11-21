@@ -10,7 +10,6 @@ struct Track {
     QString album;
     int trackNumber;
     int duration;
-
     // NOTE:
     // I am thinking we just use this as either a
     // URL or file system path, depending on isRemote

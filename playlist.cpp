@@ -179,7 +179,6 @@ void Playlist::generateShuffleOrder() {
     }
 
     // Fisher-Yates
-
     for (int i = shuffleOrder.count()-1; i > 0; i--) {
         int j = QRandomGenerator::global()->bounded(i+1);
         shuffleOrder.swapItemsAt(i, j);

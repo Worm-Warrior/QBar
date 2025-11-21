@@ -20,10 +20,10 @@ PlayerControlsWidget::PlayerControlsWidget(QWidget *parent)
     ui->Volume->setValue(50);
 
     // Setup icons
-    ui->nextButton->setIcon(QIcon("../../icons/skip-next.png"));
-    ui->prevButton->setIcon(QIcon("../../icons/skip-previous.png"));
-    ui->PlayPause->setIcon(QIcon("../../icons/play-circle.png"));
-    ui->Mute->setIcon(QIcon("../../icons/unmuted.png"));
+    ui->nextButton->setIcon(QIcon(":/icons/skip-next.png"));
+    ui->prevButton->setIcon(QIcon(":/icons/skip-previous.png"));
+    ui->PlayPause->setIcon(QIcon(":/icons/play-circle.png"));
+    ui->Mute->setIcon(QIcon(":/icons/unmuted.png"));
 
     // Clear button text (we're using icons)
     ui->prevButton->setText("");
@@ -91,12 +91,12 @@ void PlayerControlsWidget::on_PlayPause_clicked()
         qInfo() << "Calling pause()";
         player->pause();
         ui->PlayPause->setText("Play");
-        ui->PlayPause->setIcon(QIcon("../../icons/play-circle.png"));
+        ui->PlayPause->setIcon(QIcon(":/icons/play-circle.png"));
     } else {
         qInfo() << "Calling play()";
         player->play();
         ui->PlayPause->setText("Pause");
-        ui->PlayPause->setIcon(QIcon("../../icons/pause-circle.png"));
+        ui->PlayPause->setIcon(QIcon(":/icons/pause-circle.png"));
     }
 
 }
@@ -111,11 +111,11 @@ void PlayerControlsWidget::on_Mute_clicked()
     if (player->audioOutput()->isMuted()) {
         player->audioOutput()->setMuted(false);
         ui->Mute->setText("Mute");
-        ui->Mute->setIcon(QIcon("../../icons/unmuted.png"));
+        ui->Mute->setIcon(QIcon(":/icons/unmuted.png"));
     } else {
         player->audioOutput()->setMuted(true);
         ui->Mute->setText("Unmute");
-        ui->Mute->setIcon(QIcon("../../icons/muted.png"));
+        ui->Mute->setIcon(QIcon(":/icons/muted.png"));
     }
 }
 
@@ -212,10 +212,10 @@ void PlayerControlsWidget::onPlaybackStateChanged(QMediaPlayer::PlaybackState st
 
     if (state == QMediaPlayer::PlayingState) {
         ui->PlayPause->setText("Pause");
-        ui->PlayPause->setIcon(QIcon("../../icons/pause-circle.png"));
+        ui->PlayPause->setIcon(QIcon(":/icons/pause-circle.png"));
     } else {
         ui->PlayPause->setText("Play");
-        ui->PlayPause->setIcon(QIcon("../../icons/play-circle.png"));
+        ui->PlayPause->setIcon(QIcon(":/icons/play-circle.png"));
     }
 }
 
