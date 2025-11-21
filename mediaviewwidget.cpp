@@ -243,7 +243,30 @@ void MediaViewWidget::onItemDoubleClicked(int row, int column)
     }
 
     // Tell MainWindow to play all tracks in current folder, starting at selected track
-    mainWindow->playNewPlaylist(currentFolderTracks, row);
+    QTableWidgetItem *item = ui->mediaView->item(row,COL_PATH);
+
+    if (!item) {
+        qWarning() << "No path item at row: " << row;
+        return;
+    }
+
+    QString path = item->text();
+
+    int index = -1;
+
+    for (int i = 0; i < currentFolderTracks.count(); i++) {
+        if (currentFolderTracks[i].filePath == path) {
+            index = i;
+            break;
+        }
+    }
+
+    if (index == -1) {
+        qWarning() << "did not find path of file in row: " << row;
+        return;
+    }
+
+    mainWindow->playNewPlaylist(currentFolderTracks, index);
 }
 
 void MediaViewWidget::onSelectionChanged()
