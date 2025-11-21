@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include "serverinputbox.h"
 #include <QtMultimedia/QMediaPlayer>
 #include <QtMultimedia/QAudioOutput>
 #include <QMessageBox>
@@ -43,6 +44,8 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::actionExit);
     connect(ui->actionRemoteModeSwitch, &QAction::triggered,
             this, &MainWindow::remoteModeToggle);
+    connect(ui->actionServerSettings, &QAction::triggered,
+            this, &MainWindow::ServerSettings);
 
     // === LOCAL MODE ===
     connect(ui->FileBrowser, &FileBrowserWidget::folderSelected,
@@ -181,7 +184,7 @@ void MainWindow::actionExit()
 void MainWindow::remoteModeToggle()
 {
     // Validate credentials before switching to remote mode
-    if (username.isEmpty() || password.isEmpty()) {
+    if (ui->viewStack->currentIndex() == 0 && (username.isEmpty() || password.isEmpty())) {
         QMessageBox msgBox;
         msgBox.setText("Username or password is empty!");
         msgBox.setIcon(QMessageBox::Warning);
@@ -200,4 +203,16 @@ void MainWindow::remoteModeToggle()
 
     // Update menu text
     ui->actionRemoteModeSwitch->setText(newMode == 0 ? "Remote Mode" : "Local Mode");
+}
+
+void MainWindow::ServerSettings()
+{
+    serverinputbox input;
+
+    if (input.exec() == QDialog::Accepted)
+    {
+        serverUrl = input.url();
+        username = input.username();
+        password = input.password();
+    }
 }

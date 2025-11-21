@@ -350,6 +350,7 @@ QStatusBar {
      <string>Settings</string>
     </property>
     <addaction name="actionRemoteModeSwitch"/>
+    <addaction name="actionServerSettings"/>
     <addaction name="chooseRoot"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
@@ -380,6 +381,11 @@ QStatusBar {
   <action name="actionRemoteModeSwitch">
    <property name="text">
     <string>Remote Mode</string>
+   </property>
+  </action>
+  <action name="actionServerSettings">
+   <property name="text">
+    <string>Server Settings</string>
    </property>
   </action>
  </widget>
