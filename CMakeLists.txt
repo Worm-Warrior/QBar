@@ -34,6 +34,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         playlist.h playlist.cpp
         icons.qrc
         serverinputbox.h serverinputbox.cpp
+        appconfig.h appconfig.cpp
 
     )
 else()

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QMediaPlayer>
+#include <QSettings>
 #include "playlist.h"
 
 QT_BEGIN_NAMESPACE

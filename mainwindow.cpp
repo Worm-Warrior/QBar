@@ -4,6 +4,7 @@
 #include <QtMultimedia/QMediaPlayer>
 #include <QtMultimedia/QAudioOutput>
 #include <QMessageBox>
+#include "appconfig.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -11,10 +12,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Hard code credentials for now
-    username = "admin";
-    password = "rat";
-    serverUrl = "http://192.168.4.165:4533";
+    // TODO: might need to make sure that a config exists, else make an empty one
+    // because it might be UB if we don't zero it out beforehand.
+    qInfo() << AppConfig::username() << AppConfig::password() << AppConfig::serverURL();
 
     // Setup player
     QMediaPlayer *player = new QMediaPlayer(this);
@@ -214,5 +214,16 @@ void MainWindow::ServerSettings()
         serverUrl = input.url();
         username = input.username();
         password = input.password();
+
+        qInfo() << username << password << serverUrl;
+
+        QSettings settings("Voss Software", "QBar");
+        settings.beginGroup("Server");
+        settings.setValue("username", username);
+        settings.setValue("password", password);
+        settings.setValue("server_url", serverUrl);
+        settings.endGroup();
+
+        qInfo() << AppConfig::username() << AppConfig::password() << AppConfig::serverURL();
     }
 }
