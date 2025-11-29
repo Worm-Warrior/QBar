@@ -111,10 +111,10 @@ void MainWindow::playTrack(const Track &track)
     if (track.isRemote) {
         // Build streaming URL
         QString streamUrl = QString("%1/rest/stream.view?id=%2&u=%3&p=%4&v=1.16.1&c=QBar")
-                                .arg(serverUrl)
+                                .arg(AppConfig::serverURL())
                                 .arg(track.id)
-                                .arg(username)
-                                .arg(password);
+                                .arg(AppConfig::username())
+                                .arg(AppConfig::password());
         ui->PlayerControls->player->setSource(QUrl(streamUrl));
     } else {
         // Local file
@@ -184,7 +184,7 @@ void MainWindow::actionExit()
 void MainWindow::remoteModeToggle()
 {
     // Validate credentials before switching to remote mode
-    if (ui->viewStack->currentIndex() == 0 && (username.isEmpty() || password.isEmpty())) {
+    if (ui->viewStack->currentIndex() == 0 && (AppConfig::username().isEmpty() || AppConfig::password().isEmpty())) {
         QMessageBox msgBox;
         msgBox.setText("Username or password is empty!");
         msgBox.setIcon(QMessageBox::Warning);
@@ -211,9 +211,9 @@ void MainWindow::ServerSettings()
 
     if (input.exec() == QDialog::Accepted)
     {
-        serverUrl = input.url();
-        username = input.username();
-        password = input.password();
+        QString serverUrl = input.url();
+        QString username = input.username();
+        QString password = input.password();
 
         qInfo() << username << password << serverUrl;
 

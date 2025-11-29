@@ -7,6 +7,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QHeaderView>
+#include "appconfig.h"
 
 RemoteMediaView::RemoteMediaView(QWidget *parent)
     : QWidget(parent)
@@ -68,10 +69,14 @@ void RemoteMediaView::fetchAlbum(QString id)
         return;
     }
 
-    // Build URL - credentials should come from MainWindow
-    QString url = QString("http://192.168.4.165:4533/rest/getAlbum.view?"
-                          "id=%1&u=admin&p=rat&v=1.16.1&c=QBar&f=json")
-                      .arg(id);
+    QString url = QString("%1/rest/getAlbum.view?"
+                          "id=%2&u=%3&p=%4&v=1.16.1&c=QBar&f=json")
+                      .arg(AppConfig::serverURL())
+                      .arg(id)
+                      .arg(AppConfig::username())
+                      .arg(AppConfig::password());
+
+
 
     QNetworkRequest request(url);
     QNetworkReply *reply = networkManager->get(request);

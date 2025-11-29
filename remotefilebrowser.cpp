@@ -1,6 +1,7 @@
 #include "remotefilebrowser.h"
 #include "ui_remotefilebrowser.h"
 #include <qlabel.h>
+#include "appconfig.h"
 
 RemoteFileBrowser::RemoteFileBrowser(QWidget *parent)
     : QWidget(parent)
@@ -25,9 +26,12 @@ RemoteFileBrowser::~RemoteFileBrowser()
     delete ui;
 }
 
+//TODO: need to make an album view mode as well.
 void RemoteFileBrowser::fetchArtists() {
-    QString url = ("http://192.168.4.165:4533/rest/getArtists.view?type=frequent&u=admin&p=rat&v=1.16.1&c=QBar&f=json");
-
+    QString url = QString("%1/rest/getArtists.view?type=frequent&u=%2&p=%3&v=1.16.1&c=QBar&f=json")
+                      .arg(AppConfig::serverURL())
+                      .arg(AppConfig::username())
+                      .arg(AppConfig::password());
     QNetworkRequest rq(url);
     QNetworkReply *r = networkManager->get(rq);
     r->setProperty("requestType", "artists");
@@ -58,7 +62,7 @@ void RemoteFileBrowser::handleArtistsRecived(QNetworkReply *reply) {
         QJsonDocument doc = QJsonDocument::fromJson(response);
         QJsonObject obj = doc.object();
 
-        //qInfo() << "JSON RESPONSE:" << doc.toJson(QJsonDocument::Indented);
+        qInfo() << "JSON RESPONSE:" << doc.toJson(QJsonDocument::Indented);
 
         QJsonObject subsonic_res = obj["subsonic-response"].toObject();
         QJsonObject artists = subsonic_res["artists"].toObject();
@@ -142,7 +146,11 @@ void RemoteFileBrowser::onItemSelected(QTreeWidgetItem *item, int row) {
 
 void RemoteFileBrowser::fetchArtistAlbums(QString artistId, QTreeWidgetItem *parent) {
     //qInfo() << artistId;
-    QString url = "http://192.168.4.165:4533/rest/getArtist.view?id=" + artistId + "&u=admin&p=rat&v=1.16.1&c=QBar&f=json";
+    QString url = QString("%1/rest/getArtist.view?id=%2&u=%3&p=%4&v=1.16.1&c=QBar&f=json")
+                      .arg(AppConfig::serverURL())
+                      .arg(artistId)
+                      .arg(AppConfig::username())
+                      .arg(AppConfig::password());
     QNetworkRequest rq(url);
     QNetworkReply *r = networkManager->get(rq);
     r->setProperty("requestType", "albums");

@@ -20,11 +20,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    // Server credentials
-    QString username;
-    QString password;
-    QString serverUrl;
-
     // Public method for views to create and play a new playlist
     void playNewPlaylist(const QList<Track> &tracks, int startIndex = 0);
 
