@@ -55,7 +55,7 @@ public:
     // repeat and shuffle
     void setShuffle(bool enabled);
     void setRepeat(int selector);
-    bool isShuffleOn() const;
+    bool isShuffleOn() const {return shuffle;}
     bool getRepeatMode() const;
 
     QList<Track> tracks() const;

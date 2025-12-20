@@ -231,6 +231,10 @@ void MainWindow::ServerSettings()
 void MainWindow::updatePlaylist(const QList<Track> &tracks) {
     qInfo() << "updating playlist!!";
 
+    if (currentPlaylist->isShuffleOn()) {
+        return;
+    }
+
     Track old = currentPlaylist->currentTrack();
     currentPlaylist->clear();
     currentPlaylist->addTracks(tracks);
