@@ -227,3 +227,20 @@ void MainWindow::ServerSettings()
         qInfo() << AppConfig::username() << AppConfig::password() << AppConfig::serverURL();
     }
 }
+
+void MainWindow::updatePlaylist(const QList<Track> &tracks) {
+    qInfo() << "updating playlist!!";
+
+    Track old = currentPlaylist->currentTrack();
+    currentPlaylist->clear();
+    currentPlaylist->addTracks(tracks);
+
+    QList<Track> t = currentPlaylist->tracks();
+
+    for (int i = 0; i < t.size(); ++i) {
+        if (t[i].title == old.title) {
+            currentPlaylist->setCurrentIndex(i);
+            break;
+        }
+    }
+}

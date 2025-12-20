@@ -49,6 +49,9 @@ public:
     int currentIndex() const;
     int count() const;
 
+    // Sorting!
+    void sortByTrackNumber();
+
     // repeat and shuffle
     void setShuffle(bool enabled);
     void setRepeat(int selector);

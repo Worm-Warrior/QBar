@@ -184,3 +184,7 @@ void Playlist::generateShuffleOrder() {
         shuffleOrder.swapItemsAt(i, j);
     }
 }
+
+QList<Track> Playlist::tracks() const {
+    return trackList;
+}
