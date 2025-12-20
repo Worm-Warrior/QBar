@@ -26,12 +26,14 @@ public:
 private slots:
     void onNetworkReply(QNetworkReply *r);
     void onItemDoubleClicked(int row, int col);
+    void onTableSorted(int index, Qt::SortOrder order);
 
 private:
     Ui::RemoteMediaView *ui;
     QNetworkAccessManager *networkManager;
     MainWindow *mainWindow;
     QList<Track> currentAlbumTracks;
+    void rebuildPlaylistToUI();
 
     enum ColIndex {
         COL_TRACK = 0,

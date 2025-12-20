@@ -7,6 +7,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QHeaderView>
+#include <QTimer>
 #include "appconfig.h"
 
 RemoteMediaView::RemoteMediaView(QWidget *parent)
@@ -31,6 +32,7 @@ RemoteMediaView::RemoteMediaView(QWidget *parent)
             this, &RemoteMediaView::onNetworkReply);
     connect(ui->mediaView, &QTableWidget::cellDoubleClicked,
             this, &RemoteMediaView::onItemDoubleClicked);
+    connect(ui->mediaView->horizontalHeader(), &QHeaderView::sortIndicatorChanged, this, &RemoteMediaView::onTableSorted);
 }
 
 RemoteMediaView::~RemoteMediaView()
@@ -205,4 +207,43 @@ void RemoteMediaView::onItemDoubleClicked(int row, int col)
 
     // Tell MainWindow to play this album starting at the selected track
     mainWindow->playNewPlaylist(currentAlbumTracks, row);
+}
+
+void RemoteMediaView::onTableSorted(int index, Qt::SortOrder order) {
+    Q_UNUSED(index);
+    Q_UNUSED(order);
+    
+    qInfo() << "Calling resort!";
+
+    QTimer::singleShot(0, this, &RemoteMediaView::rebuildPlaylistToUI);
+}
+
+void RemoteMediaView::rebuildPlaylistToUI() {
+    QList<Track> newOrder;
+    for (int row = 0; row < ui->mediaView->rowCount(); ++row) {
+        QTableWidgetItem *idItem = ui->mediaView->item(row, COL_ID);
+        if (idItem) {
+            QString id = idItem->text();
+            qInfo() << "track_id = " << id;
+            for (const Track &track : currentAlbumTracks) {
+                if (track.id == id) {
+                    newOrder.append(track);
+                    break;
+                }
+            }
+        }
+    }
+
+    qInfo() << currentAlbumTracks.size();
+    qInfo() << newOrder.size();
+    
+    currentAlbumTracks.clear();
+    for (const Track &track : newOrder) {
+        currentAlbumTracks.append(track);
+        qInfo() << track.title;
+    }
+
+    qInfo() << currentAlbumTracks.size();
+
+    mainWindow->updatePlaylist(currentAlbumTracks);
 }

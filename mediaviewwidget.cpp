@@ -280,6 +280,7 @@ void MediaViewWidget::onSelectionChanged()
     emit selectionChanged(getSelectedFiles());
 }
 
+// The user has changed the sort of the UI, rebuild playlist.
 void MediaViewWidget::onTableSorted(int index, Qt::SortOrder order) {
     Q_UNUSED(index);
     Q_UNUSED(order);
@@ -287,8 +288,6 @@ void MediaViewWidget::onTableSorted(int index, Qt::SortOrder order) {
     qInfo() << "Calling resort!";
 
     QTimer::singleShot(0, this, &MediaViewWidget::rebuildPlaylistToUI);
-
-    // The user has changed the sort of the UI, rebuild playlist.
 }
 
 
