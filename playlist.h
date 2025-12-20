@@ -46,17 +46,14 @@ public:
 
     // index stuff
     void setCurrentIndex(int index);
-    int currentIndex() const;
+    int currentIndex() const {return curIndex;}
     int count() const;
-
-    // Sorting!
-    void sortByTrackNumber();
 
     // repeat and shuffle
     void setShuffle(bool enabled);
     void setRepeat(int selector);
     bool isShuffleOn() const {return shuffle;}
-    bool getRepeatMode() const;
+    int getRepeatMode() const {return repeat;}
 
     QList<Track> tracks() const;
 

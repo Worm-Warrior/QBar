@@ -117,9 +117,10 @@ void MediaViewWidget::displayFolder(const QString &folderPath)
                                new QTableWidgetItem(mediaFile.filePath));
     }
 
-    // We can solve this in a bad way by making the playlist not sorted by default?
     ui->mediaView->setSortingEnabled(true);
-    // ui->mediaView->sortByColumn(COL_TRACK, Qt::AscendingOrder);
+    ui->mediaView->sortByColumn(COL_TRACK, Qt::AscendingOrder);
+    //ui->mediaView->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    ui->mediaView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
 
 
     qInfo() << "Loaded" << audioFiles.size() << "audio files from" << folderPath;
@@ -288,24 +289,23 @@ void MediaViewWidget::onTableSorted(int index, Qt::SortOrder order) {
     QTimer::singleShot(0, this, &MediaViewWidget::rebuildPlaylistToUI);
 
     // The user has changed the sort of the UI, rebuild playlist.
+}
 
-    }
 
-
-    void MediaViewWidget::rebuildPlaylistToUI() {
-        QList<Track> newOrder;
-        for (int row = 0; row < ui->mediaView->rowCount(); ++row) {
-            QTableWidgetItem *pathItem = ui->mediaView->item(row, COL_PATH);
-            if (pathItem) {
-                QString path = pathItem->text();
-                for (const Track &track : currentFolderTracks) {
-                    if (track.filePath == path) {
-                        newOrder.append(track);
-                        break;
-                    }
+void MediaViewWidget::rebuildPlaylistToUI() {
+    QList<Track> newOrder;
+    for (int row = 0; row < ui->mediaView->rowCount(); ++row) {
+        QTableWidgetItem *pathItem = ui->mediaView->item(row, COL_PATH);
+        if (pathItem) {
+            QString path = pathItem->text();
+            for (const Track &track : currentFolderTracks) {
+                if (track.filePath == path) {
+                    newOrder.append(track);
+                    break;
                 }
             }
         }
+    }
 
         // Have new order, now add to the old track list
 
@@ -320,4 +320,4 @@ void MediaViewWidget::onTableSorted(int index, Qt::SortOrder order) {
         qInfo() << currentFolderTracks.size();
 
         mainWindow->updatePlaylist(currentFolderTracks);
-    }
+}

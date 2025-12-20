@@ -13,6 +13,7 @@ FileBrowserWidget::FileBrowserWidget(QWidget *parent)
     ui->treeView->setRootIndex(rootIndex);
     ui->treeView->setSortingEnabled(true);
     ui->treeView->sortByColumn(0, Qt::SortOrder::AscendingOrder);
+    ui->treeView->header()->resizeSections(QHeaderView::ResizeToContents);
 }
 
 FileBrowserWidget::~FileBrowserWidget()
