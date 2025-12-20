@@ -21,7 +21,6 @@ RemoteMediaView::RemoteMediaView(QWidget *parent)
     ui->mediaView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->mediaView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->mediaView->verticalHeader()->setVisible(false);
-
     // Setup network manager
     networkManager = new QNetworkAccessManager(this);
 
@@ -59,7 +58,20 @@ void RemoteMediaView::setupHeaderCols()
     ui->mediaView->horizontalHeader()->setSectionResizeMode(COL_TRACK, QHeaderView::ResizeToContents);
     ui->mediaView->horizontalHeader()->setSectionResizeMode(COL_NAME, QHeaderView::Stretch);
     ui->mediaView->horizontalHeader()->setSectionResizeMode(COL_ALBUM, QHeaderView::Stretch);
+    ui->mediaView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    ui->mediaView->setSortingEnabled(true);
+    ui->mediaView->sortByColumn(COL_TRACK, Qt::AscendingOrder);
+    ui->mediaView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     ui->mediaView->horizontalHeader()->setSectionResizeMode(COL_DURATION, QHeaderView::ResizeToContents);
+
+    auto *h = ui->mediaView->horizontalHeader();
+    h->setStretchLastSection(false);
+    h->setSectionResizeMode(QHeaderView::Interactive);
+
+    h->setSectionResizeMode(COL_TRACK,    QHeaderView::ResizeToContents);
+    h->setSectionResizeMode(COL_DURATION, QHeaderView::ResizeToContents);
+    h->setSectionResizeMode(COL_NAME,     QHeaderView::Stretch);
+
 }
 
 void RemoteMediaView::fetchAlbum(QString id)
@@ -104,6 +116,11 @@ void RemoteMediaView::onNetworkReply(QNetworkReply *reply)
 
 void RemoteMediaView::handleAlbumRequest(QNetworkReply *reply)
 {
+
+    // For this view, we need to disable sorting while parsing the album.
+    // Otherwise we get bad data when trying to get the sorting to work.
+    ui->mediaView->setSortingEnabled(false);
+
     QByteArray response = reply->readAll();
     QJsonDocument doc = QJsonDocument::fromJson(response);
     QJsonObject obj = doc.object();
@@ -143,8 +160,12 @@ void RemoteMediaView::handleAlbumRequest(QNetworkReply *reply)
                                   .arg(seconds, 2, 10, QChar('0'));
 
         // Populate table row
-        ui->mediaView->setItem(i, COL_TRACK,
-                               new QTableWidgetItem(QString::number(track.trackNumber)));
+
+        auto *item = new QTableWidgetItem;
+        item->setData(Qt::DisplayRole, track.trackNumber);
+        item->setData(Qt::UserRole, track.trackNumber);
+        ui->mediaView->setItem(i, COL_TRACK, item);
+
         ui->mediaView->setItem(i, COL_NAME,
                                new QTableWidgetItem(track.title));
         ui->mediaView->setItem(i, COL_ALBUM,
@@ -155,6 +176,11 @@ void RemoteMediaView::handleAlbumRequest(QNetworkReply *reply)
                                new QTableWidgetItem(track.id));
     }
 
+    // At the end, make enable sorting and do the header resizing.
+    ui->mediaView->setSortingEnabled(true);
+    ui->mediaView->sortByColumn(COL_TRACK, Qt::AscendingOrder);
+    ui->mediaView->resizeColumnsToContents();
+    
     qInfo() << "Loaded" << currentAlbumTracks.count() << "tracks";
 }
 

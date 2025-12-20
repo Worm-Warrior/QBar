@@ -15,6 +15,8 @@ FileBrowserWidget::FileBrowserWidget(QWidget *parent)
     ui->treeView->sortByColumn(0, Qt::SortOrder::AscendingOrder);
     ui->treeView->header()->setSectionResizeMode(QHeaderView::Interactive);
 
+    // NOTE: we do this because the file system is ASYNC, so we need to resize when it is done loading!
+    // So we resize the headers when we are done loading the dir.
     connect(model, &QFileSystemModel::directoryLoaded, this, [this](){
         for (int i = 0; i < model->columnCount(); ++i) {
             ui->treeView->resizeColumnToContents(i);
