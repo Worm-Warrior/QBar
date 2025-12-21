@@ -22,6 +22,7 @@ public:
 
     // Public method for views to create and play a new playlist
     void playNewPlaylist(const QList<Track> &tracks, int startIndex = 0);
+    void updatePlaylist(const QList<Track> &tracks);
 
 private slots:
     // Menu actions

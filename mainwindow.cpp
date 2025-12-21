@@ -82,6 +82,7 @@ MainWindow::MainWindow(QWidget *parent)
         qInfo() << mode;
     });
 
+    setWindowTitle("QBar Music Player");
 }
 
 MainWindow::~MainWindow()
@@ -225,5 +226,38 @@ void MainWindow::ServerSettings()
         settings.endGroup();
 
         qInfo() << AppConfig::username() << AppConfig::password() << AppConfig::serverURL();
+    }
+}
+
+void MainWindow::updatePlaylist(const QList<Track> &tracks) {
+    qInfo() << "updating playlist!!";
+
+    // If shuffle is on, the UI will not show the ordering anyway, we don't care.
+    if (currentPlaylist->isShuffleOn()) {
+        return;
+    }
+
+    // If we called this, it means that we had no playlist before.
+    // So we don't need to swap any indexes, just new list!
+    if (currentPlaylist->currentIndex() == -1) {
+        currentPlaylist->clear(); // IDK if this is needed, but we should just in case!
+        currentPlaylist->addTracks(tracks);
+        return;
+    }
+
+
+    // Otherwise, we need to translate the old playlist playing index to the new one.
+    // This is so that when the user does next/prev it acts as expected!
+    Track old = currentPlaylist->currentTrack();
+    currentPlaylist->clear();
+    currentPlaylist->addTracks(tracks);
+
+    QList<Track> t = currentPlaylist->tracks();
+
+    for (int i = 0; i < t.size(); ++i) {
+        if (t[i].title == old.title) {
+            currentPlaylist->setCurrentIndex(i);
+            break;
+        }
     }
 }

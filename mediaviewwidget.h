@@ -41,11 +41,13 @@ signals:
 private slots:
     void onItemDoubleClicked(int row, int column);
     void onSelectionChanged();
+    void onTableSorted(int index, Qt::SortOrder order);
 
 private:
     Ui::MediaViewWidget *ui;
     MainWindow *mainWindow;
     QList<Track> currentFolderTracks;
+    void rebuildPlaylistToUI();
 
     enum ColIndex {
         COL_TRACK = 0,
