@@ -118,12 +118,13 @@ void MediaViewWidget::displayFolder(const QString &folderPath)
     }
 
     ui->mediaView->setSortingEnabled(true);
-    ui->mediaView->sortByColumn(COL_TRACK, Qt::AscendingOrder);
+    //ui->mediaView->sortByColumn(COL_TRACK, Qt::AscendingOrder);
     //ui->mediaView->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
     ui->mediaView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
 
 
     qInfo() << "Loaded" << audioFiles.size() << "audio files from" << folderPath;
+    rebuildPlaylistToUI();
 }
 
 void MediaViewWidget::clearView()

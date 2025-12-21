@@ -126,6 +126,8 @@ void MainWindow::playTrack(const Track &track)
     // ui->PlayerControls->updateTrackInfo(track);
 
     ui->PlayerControls->player->play();
+
+    setWindowTitle(track.artist + " | [ " + track.album + " ] | " + track.title);
 }
 
 void MainWindow::onNextRequested()
