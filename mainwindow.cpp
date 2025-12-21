@@ -122,10 +122,9 @@ void MainWindow::playTrack(const Track &track)
         ui->PlayerControls->player->setSource(QUrl::fromLocalFile(track.filePath));
     }
 
-    // Update UI with track info (you may need to add this method to PlayerControlsWidget)
-    // ui->PlayerControls->updateTrackInfo(track);
-
     ui->PlayerControls->player->play();
+
+    emit newTrackPlayed(track);
 
     setWindowTitle(track.artist + " | [ " + track.album + " ] | " + track.title);
 }
@@ -261,5 +260,14 @@ void MainWindow::updatePlaylist(const QList<Track> &tracks) {
             currentPlaylist->setCurrentIndex(i);
             break;
         }
+    }
+}
+
+void MainWindow::newTrackPlayed(const Track &track) {
+    if (ui->viewStack->currentIndex() == 0 && ui->browserStack->currentIndex() == 0) {
+        qInfo() << "new local track selected: " << track.title;
+        ui->MainView->selectNewTrack(track);
+    } else {
+        ui->RemoteView->selectedNewTrack(track);
     }
 }

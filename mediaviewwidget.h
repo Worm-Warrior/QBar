@@ -34,6 +34,7 @@ public:
 
     void setMainWindow(MainWindow *mw);
     void displayFolder(const QString &folderPath);
+    void selectNewTrack(const Track &track);
 
 signals:
     void selectionChanged(const QStringList &selectedFiles);

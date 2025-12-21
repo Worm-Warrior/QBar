@@ -62,7 +62,7 @@ void RemoteMediaView::setupHeaderCols()
     ui->mediaView->horizontalHeader()->setSectionResizeMode(COL_ALBUM, QHeaderView::Stretch);
     ui->mediaView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     ui->mediaView->setSortingEnabled(true);
-    ui->mediaView->sortByColumn(COL_TRACK, Qt::AscendingOrder);
+    // ui->mediaView->sortByColumn(COL_TRACK, Qt::AscendingOrder);
     ui->mediaView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     ui->mediaView->horizontalHeader()->setSectionResizeMode(COL_DURATION, QHeaderView::ResizeToContents);
 
@@ -162,7 +162,6 @@ void RemoteMediaView::handleAlbumRequest(QNetworkReply *reply)
                                   .arg(seconds, 2, 10, QChar('0'));
 
         // Populate table row
-
         auto *item = new QTableWidgetItem;
         item->setData(Qt::DisplayRole, track.trackNumber);
         item->setData(Qt::UserRole, track.trackNumber);
@@ -218,6 +217,9 @@ void RemoteMediaView::onTableSorted(int index, Qt::SortOrder order) {
     QTimer::singleShot(0, this, &RemoteMediaView::rebuildPlaylistToUI);
 }
 
+
+// TODO: we need to make this only happen when we play a new album
+// Right now it is happening on sort of a NON-PLAYING album
 void RemoteMediaView::rebuildPlaylistToUI() {
     QList<Track> newOrder;
     for (int row = 0; row < ui->mediaView->rowCount(); ++row) {
@@ -246,4 +248,17 @@ void RemoteMediaView::rebuildPlaylistToUI() {
     qInfo() << currentAlbumTracks.size();
 
     mainWindow->updatePlaylist(currentAlbumTracks);
+}
+
+void RemoteMediaView::selectedNewTrack(const Track &track) {
+    int row = 0;
+
+    for (const Track &t : currentAlbumTracks) {
+        if (t.id == track.id) {
+            break;
+        }
+        ++row;
+    }
+
+    ui->mediaView->selectRow(row);
 }

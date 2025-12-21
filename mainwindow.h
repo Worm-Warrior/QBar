@@ -31,6 +31,7 @@ private slots:
     void actionExit();
     void remoteModeToggle();
     void ServerSettings();
+    void newTrackPlayed(const Track &track);
 
     // Playlist navigation (called by PlayerControls)
     void onNextRequested();

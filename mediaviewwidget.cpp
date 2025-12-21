@@ -124,7 +124,8 @@ void MediaViewWidget::displayFolder(const QString &folderPath)
 
 
     qInfo() << "Loaded" << audioFiles.size() << "audio files from" << folderPath;
-    rebuildPlaylistToUI();
+    
+    //rebuildPlaylistToUI();
 }
 
 void MediaViewWidget::clearView()
@@ -291,7 +292,8 @@ void MediaViewWidget::onTableSorted(int index, Qt::SortOrder order) {
     QTimer::singleShot(0, this, &MediaViewWidget::rebuildPlaylistToUI);
 }
 
-
+// TODO: we need to make this only happen when we play a new folder
+// Right now it is happening on sort of a NON-PLAYING folder
 void MediaViewWidget::rebuildPlaylistToUI() {
     QList<Track> newOrder;
     for (int row = 0; row < ui->mediaView->rowCount(); ++row) {
@@ -320,4 +322,17 @@ void MediaViewWidget::rebuildPlaylistToUI() {
         qInfo() << currentFolderTracks.size();
 
         mainWindow->updatePlaylist(currentFolderTracks);
+}
+
+void MediaViewWidget::selectNewTrack(const Track &track) {
+    int row = 0;
+
+    for (Track &t : currentFolderTracks) {
+        if (t.title == track.title) {
+            break;
+        }
+        ++row;
+    }
+
+    ui->mediaView->selectRow(row);
 }

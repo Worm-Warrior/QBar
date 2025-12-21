@@ -22,6 +22,7 @@ public:
 
     void setMainWindow(MainWindow *mw);
     void fetchAlbum(QString id);
+    void selectedNewTrack(const Track &track);
 
 private slots:
     void onNetworkReply(QNetworkReply *r);
