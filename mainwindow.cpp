@@ -76,6 +76,9 @@ MainWindow::MainWindow(QWidget *parent)
         qInfo() << mode;
     });
 
+    connect(ui->FileBrowser, &FileBrowserWidget::folderSelected,
+            ui->MainView, &MediaViewWidget::onFolderSelected);
+
     connect(ui->PlayerControls, &PlayerControlsWidget::shuffleChanged,
             this, [this](bool mode){
         currentPlaylist->setShuffle(mode);
@@ -117,8 +120,22 @@ void MainWindow::playTrack(const Track &track)
                                 .arg(AppConfig::username())
                                 .arg(AppConfig::password());
         ui->PlayerControls->player->setSource(QUrl(streamUrl));
+        playState.currentPath = track.album;
     } else {
         // Local file
+
+        QString parentPath = track.filePath;
+
+        int lastPos = parentPath.lastIndexOf('/');
+
+        if (lastPos == -1) {
+            qInfo() << "char '/' not found in filepath???";
+            exit(EXIT_FAILURE);
+        }
+
+        parentPath.truncate(lastPos);
+
+        playState.currentPath = parentPath;
         ui->PlayerControls->player->setSource(QUrl::fromLocalFile(track.filePath));
     }
 

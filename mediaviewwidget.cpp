@@ -287,6 +287,10 @@ void MediaViewWidget::onTableSorted(int index, Qt::SortOrder order) {
     Q_UNUSED(index);
     Q_UNUSED(order);
 
+    if (mainWindow->playState.currentPath != currentView) {
+        return;
+    }
+
     qInfo() << "Calling resort!";
 
     QTimer::singleShot(0, this, &MediaViewWidget::rebuildPlaylistToUI);
@@ -335,4 +339,8 @@ void MediaViewWidget::selectNewTrack(const Track &track) {
     }
 
     ui->mediaView->selectRow(row);
+}
+
+void MediaViewWidget::onFolderSelected(const QString &folderPath) {
+    currentView = folderPath;
 }
