@@ -6,7 +6,7 @@ While using Feishin, I noticed that it froze my desktop and consumed a lot of CP
 
 I decided that I should try and make my own small program to do exactly what I want out of a music player and nothing more, both because I was annoyed and because it seemed like a fun project to try and learn desktop UI in a more "serious" language like C++.
 
-This is my first time programming a UI for a desktop app, and the first time usin Qt, I fully realize that the structure of the code is not good, an I would do many things different if I were to do it again.
+This is my first time programming a UI for a desktop app, and the first time using Qt, I fully realize that the structure of the code is not good, an I would do many things different if I were to do it again.
 
 I do not know if I will add things like playlists, advanced searching/filtering, or a fancy UI.
 
