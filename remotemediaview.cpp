@@ -131,6 +131,8 @@ void RemoteMediaView::handleAlbumRequest(QNetworkReply *reply)
     QJsonObject album = subsonicResponse["album"].toObject();
     QJsonArray songs = album["song"].toArray();
 
+    qInfo() << songs;
+
     // Clear previous album
     currentAlbumTracks.clear();
     ui->mediaView->setRowCount(0);
@@ -149,6 +151,7 @@ void RemoteMediaView::handleAlbumRequest(QNetworkReply *reply)
         track.trackNumber = song["track"].toInt();
         track.duration = song["duration"].toInt();
         track.isRemote = true;
+        track.albumId = song["albumId"].toString();
         track.filePath = "";  // Not needed for remote tracks
 
         currentAlbumTracks.append(track);
@@ -179,8 +182,12 @@ void RemoteMediaView::handleAlbumRequest(QNetworkReply *reply)
 
     // At the end, make enable sorting and do the header resizing.
     ui->mediaView->setSortingEnabled(true);
-    ui->mediaView->sortByColumn(COL_TRACK, Qt::AscendingOrder);
+    //ui->mediaView->sortByColumn(COL_TRACK, Qt::AscendingOrder);
     ui->mediaView->resizeColumnsToContents();
+
+    if (currentView == mainWindow->playState.currentPath) {
+        ui->mediaView->selectRow(mainWindow->getCurrentTrackIndex());
+    }
     
     qInfo() << "Loaded" << currentAlbumTracks.count() << "tracks";
 }
@@ -211,7 +218,11 @@ void RemoteMediaView::onItemDoubleClicked(int row, int col)
 void RemoteMediaView::onTableSorted(int index, Qt::SortOrder order) {
     Q_UNUSED(index);
     Q_UNUSED(order);
-    
+
+    if (mainWindow->playState.currentPath != currentView) {
+        return;
+    }
+
     qInfo() << "Calling resort!";
 
     QTimer::singleShot(0, this, &RemoteMediaView::rebuildPlaylistToUI);
@@ -261,4 +272,9 @@ void RemoteMediaView::selectedNewTrack(const Track &track) {
     }
 
     ui->mediaView->selectRow(row);
+}
+
+
+void RemoteMediaView::onAlbumSelected(QString albumId) {
+    currentView = albumId;
 }

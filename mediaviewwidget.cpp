@@ -343,4 +343,8 @@ void MediaViewWidget::selectNewTrack(const Track &track) {
 
 void MediaViewWidget::onFolderSelected(const QString &folderPath) {
     currentView = folderPath;
+
+    if (currentView == mainWindow->playState.currentPath) {
+        ui->mediaView->selectRow(mainWindow->getCurrentTrackIndex());
+    }
 }

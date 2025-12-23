@@ -24,6 +24,9 @@ public:
     void fetchAlbum(QString id);
     void selectedNewTrack(const Track &track);
 
+public slots:
+    void onAlbumSelected(QString albumId);
+
 private slots:
     void onNetworkReply(QNetworkReply *r);
     void onItemDoubleClicked(int row, int col);
@@ -34,6 +37,7 @@ private:
     QNetworkAccessManager *networkManager;
     MainWindow *mainWindow;
     QList<Track> currentAlbumTracks;
+    QString currentView;
     void rebuildPlaylistToUI();
 
     enum ColIndex {

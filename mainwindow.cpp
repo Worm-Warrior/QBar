@@ -79,6 +79,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->FileBrowser, &FileBrowserWidget::folderSelected,
             ui->MainView, &MediaViewWidget::onFolderSelected);
 
+    connect(ui->RemoteBrowser, &RemoteFileBrowser::albumSelected,
+            ui->RemoteView, &RemoteMediaView::onAlbumSelected);
+
     connect(ui->PlayerControls, &PlayerControlsWidget::shuffleChanged,
             this, [this](bool mode){
         currentPlaylist->setShuffle(mode);
@@ -114,16 +117,15 @@ void MainWindow::playTrack(const Track &track)
 {
     if (track.isRemote) {
         // Build streaming URL
+        playState.currentPath = track.albumId;
         QString streamUrl = QString("%1/rest/stream.view?id=%2&u=%3&p=%4&v=1.16.1&c=QBar")
                                 .arg(AppConfig::serverURL())
                                 .arg(track.id)
                                 .arg(AppConfig::username())
                                 .arg(AppConfig::password());
         ui->PlayerControls->player->setSource(QUrl(streamUrl));
-        playState.currentPath = track.album;
     } else {
         // Local file
-
         QString parentPath = track.filePath;
 
         int lastPos = parentPath.lastIndexOf('/');
@@ -287,4 +289,8 @@ void MainWindow::newTrackPlayed(const Track &track) {
     } else {
         ui->RemoteView->selectedNewTrack(track);
     }
+}
+
+int MainWindow::getCurrentTrackIndex() {
+    return currentPlaylist->currentIndex();
 }

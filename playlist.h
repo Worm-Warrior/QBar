@@ -8,6 +8,7 @@ struct Track {
     QString title;
     QString artist;
     QString album;
+    QString albumId;
     int trackNumber;
     int duration;
     // NOTE:

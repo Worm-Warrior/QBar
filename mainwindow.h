@@ -29,6 +29,7 @@ public:
     void playNewPlaylist(const QList<Track> &tracks, int startIndex = 0);
     void updatePlaylist(const QList<Track> &tracks);
     currentPlayState playState;
+    int getCurrentTrackIndex();
 
 private slots:
     // Menu actions
