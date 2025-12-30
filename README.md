@@ -1,5 +1,7 @@
 # QBar—Local and Remote Music Player Using Qt
 
+## THIS PROJECT IS NO LONGER BEING WORKED ON 
+
 This music player is a personal project to make a music player that I want to use and that has the features I want.
 
 While using Feishin, I noticed that it froze my desktop and consumed a lot of CPU resources when left open.
